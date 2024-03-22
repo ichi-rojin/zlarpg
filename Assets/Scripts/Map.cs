@@ -24,7 +24,7 @@ public class Map : MonoBehaviour
     float tileSize; //プレファブのサイズ
     Vector2 mapCenterPos; //マップのセンター位置
 
-    private GameObject parent;
+    private GameObject parent; //マップのゲームオブジェクト
 
     void Start()
     {
@@ -39,22 +39,31 @@ public class Map : MonoBehaviour
         rowLength = textData.Length;
 
         // ２次元配列の定義
-        map = new string[colLength, rowLength];//マップ作成
+        map = new string[colLength, rowLength + 1];//マップ作成
         PlaceTiles();//プレファブを並べる処理
+        for (int y = 0; y < rowLength; y++)
+        {
+            for (int x = 0; x < colLength; x++)
+            {
+                print(map[x, y]);
+            }
+        }
     }
 
     void PlaceTiles()
     {
         tileSize = groundPrefab.GetComponent<Renderer>().bounds.size.x; //タイルサイズ取得
         mapCenterPos = new Vector2(colLength * tileSize / 2, rowLength * tileSize / 2); //中心座標取得
-        for (int i = 0; i < rowLength; i++)
+        for (int y = 0; y < rowLength; y++)
         {
-            string[] tempWords = textData[i].Split(',');
+            string[] tempWords = textData[y].Split(',');
 
-            for (int j = 0; j < colLength; j++)
+            for (int x = 0; x < colLength; x++)
             {
-                string tileType = tempWords[j]; //マップの種類取得
-                Vector2 pos = GetWorldPositionFromTile(j, i);//座標を計算
+                string tileType = tempWords[x]; //マップの種類取得
+                Vector2 pos = GetWorldPositionFromTile(x, y);//座標を計算
+
+                map[x, y] = tileType;
 
                 if (tileType != null)
                 {
