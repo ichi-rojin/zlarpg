@@ -2,8 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Map : MonoBehaviour
+public class MapManager : MonoBehaviour
 {
+
+    public TextAsset textFile;
+
     [SerializeField] GameObject
         groundPrefab,
         wallPrefab,
@@ -11,7 +14,7 @@ public class Map : MonoBehaviour
     ; //各種プレファブ
 
     [SerializeField]
-    private TextAsset textFile;
+    private Transform parent; //マップのゲームオブジェクト
 
     private string[] textData;
     string[,] map; //マップデータ
@@ -24,11 +27,8 @@ public class Map : MonoBehaviour
     float tileSize; //プレファブのサイズ
     Vector2 mapCenterPos; //マップのセンター位置
 
-    private GameObject parent; //マップのゲームオブジェクト
-
     void Start()
     {
-        parent = GameObject.Find("Map");
         string textLines = textFile.text; // テキストの全体データの代入
 
         // 改行でデータを分割して配列に代入
