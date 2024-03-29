@@ -15,10 +15,12 @@ public class CharacterManager : MonoBehaviour
 
     private void Start()
     {
-        mapManager = this.gameObject.GetComponent<MapManager>() as MapManager;
+        mapManager = this.gameObject.GetComponent<MapManager>();
         Vector2 pos = mapManager.GetRandomPosition(); // Šî“_‚ÌÀ•W‚ğŒ³‚É•Ï”pos‚ğéŒ¾
 
-        Instantiate(characterPrefab, pos, Quaternion.Euler(0, 0, 0f), parent);
+        GameObject chara = Instantiate(characterPrefab, pos, Quaternion.Euler(0, 0, 0f), parent);
+        CharacterAI charaAI = chara.GetComponent<CharacterAI>();
+        charaAI.setPos(pos);
     }
 
     // Update is called once per frame
