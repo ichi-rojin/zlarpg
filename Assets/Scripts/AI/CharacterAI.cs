@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class CharacterAI : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class CharacterAI : MonoBehaviour
 
     private Transform player; //Prefab
 
-    private Vector2 _pos;
+    private Vector2Int _pos;
 
     private GameObject managers;
     private MapManager mapManager;
@@ -28,20 +29,24 @@ public class CharacterAI : MonoBehaviour
         mapManager = managers.GetComponent<MapManager>();
 
         player = this.gameObject.transform;
-        print(mapManager.GetRandomPosition());
+        char[,] map = mapManager.map;
 
         yield return new WaitForSeconds(0.1f);
 
         {
-            Vector2 startPos = _pos;
-            print(startPos);
-            Vector2 endPos = mapManager.GetRandomPosition();
-            print(endPos);
+            Vector2Int startPos = _pos;
+            Vector2Int endPos = mapManager.GetRandomCoord();
+            Debug.Log(startPos);
+            Debug.Log(endPos);
+            AStar aStar = new AStar();
+            List<Vector2Int> route = aStar.Serch(startPos, endPos, map);
+            Debug.Log(string.Join(", ", route.Select(obj => obj.ToString())));
+
             yield return new WaitForSeconds(0.01f);
         }
     }
 
-    public void setPos(Vector2 pos)
+    public void setPos(Vector2Int pos)
     {
         _pos = pos;
     }

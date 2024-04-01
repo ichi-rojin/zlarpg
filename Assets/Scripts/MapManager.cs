@@ -20,7 +20,13 @@ public class MapManager : MonoBehaviour
     private Transform mapBlocks; //マップのゲームオブジェクト
 
     private string[] textData;
-    private char[,] map; //マップデータ
+    private char[,] _map; //マップデータ
+
+    // プロパティ
+    public char[,] map
+    {
+        get { return _map; }
+    }
 
     private int
         rowLength,
@@ -42,7 +48,7 @@ public class MapManager : MonoBehaviour
         rowLength = textData.Length;
 
         // ２次元配列の定義
-        map = new char[colLength, rowLength];//マップ作成
+        _map = new char[colLength, rowLength];//マップ作成
         PlaceTiles();//プレファブを並べる処理
     }
 
@@ -62,7 +68,7 @@ public class MapManager : MonoBehaviour
                 char tileType = tempWords[x]; //マップの種類取得
                 Vector2 pos = GetWorldPositionFromTile(x, y);//座標を計算
 
-                map[x, y] = tileType;
+                _map[x, y] = tileType;
 
                 Instantiate(groundPrefab, pos, Quaternion.Euler(0, 0, 0f), mapBlocks);
 
@@ -87,9 +93,9 @@ public class MapManager : MonoBehaviour
     }
 
     //スポーン座標を取得
-    public Vector2 GetRandomPosition(char type = 'g')
+    public Vector2Int GetRandomCoord(char type = 'g')
     {
-        var value = map.Cast<char>()//1次元配列に戻す
+        var value = _map.Cast<char>()//1次元配列に戻す
 
             .Select((d, i) => new
             {
@@ -101,6 +107,6 @@ public class MapManager : MonoBehaviour
             .OrderBy(_ => Guid.NewGuid())   //ランダムな値でソート
             .First();   //最初の一つ(匿名クラス{X, Y, Value}型です。)
 
-        return GetWorldPositionFromTile(value.X, value.Y);
+        return new Vector2Int(value.X, value.Y);
     }
 }
