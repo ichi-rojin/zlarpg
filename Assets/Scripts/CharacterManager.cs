@@ -2,26 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[DefaultExecutionOrder(1)]
 public class CharacterManager : MonoBehaviour
 {
     [SerializeField]
-    GameObject characterPrefab; //各種プレファブ
+    private GameObject characterPrefab; //各種プレファブ
 
     [SerializeField]
     private Transform parent; //マップのゲームオブジェクト
 
+    private MapManager mapManager;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        Vector2 pos = new Vector2(0.0f, 0.0f); // 基点の座標を元に変数posを宣言
+        mapManager = this.gameObject.GetComponent<MapManager>() as MapManager;
+        Vector2 pos = mapManager.GetRandomPosition(); // 基点の座標を元に変数posを宣言
 
-        Instantiate(characterPrefab, pos, Quaternion.Euler(0, 0, 0f), parent.transform);
+        Instantiate(characterPrefab, pos, Quaternion.Euler(0, 0, 0f), parent);
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
     }
 }
