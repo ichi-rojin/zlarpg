@@ -273,8 +273,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6e5702d7b9476144a03ce3e8a0813fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterPrefab: {fileID: 7620391073830392124, guid: 8e2cf664ca75049488f68303f03acf64, type: 3}
-  parent: {fileID: 1184960657}
+  _characterPrefab: {fileID: 7620391073830392124, guid: 8e2cf664ca75049488f68303f03acf64, type: 3}
+  _parent: {fileID: 1184960657}
 --- !u!114 &730312866
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -288,10 +288,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textFile: {fileID: 4900000, guid: f06da4cf8bfdb384ebc861be669cb10f, type: 3}
-  groundPrefab: {fileID: 5222913449232688100, guid: 4ded5a7f7d5211e478d98df531ebd18e, type: 3}
-  wallPrefab: {fileID: 4054332299303345825, guid: aed8ab1f59980ac4abf3baffff2b2910, type: 3}
-  sectionLinePrefab: {fileID: 5162233651711537261, guid: f8a0e63f9db0ffa48af9dc8a4fe213a9, type: 3}
-  mapBlocks: {fileID: 787370236}
+  _groundPrefab: {fileID: 5222913449232688100, guid: 4ded5a7f7d5211e478d98df531ebd18e, type: 3}
+  _wallPrefab: {fileID: 4054332299303345825, guid: aed8ab1f59980ac4abf3baffff2b2910, type: 3}
+  _sectionLinePrefab: {fileID: 5162233651711537261, guid: f8a0e63f9db0ffa48af9dc8a4fe213a9, type: 3}
+  _mapBlocks: {fileID: 787370236}
 --- !u!1 &787370234
 GameObject:
   m_ObjectHideFlags: 0

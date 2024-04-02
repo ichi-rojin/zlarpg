@@ -1,19 +1,30 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 
-public class Helper : MonoBehaviour
+
+public static class Extensions
 {
-    public static void dumpCharArray(char[,] data)
+    /// <summary>
+    /// コレクションのダンプ
+    /// 2021/01/11 Fantom
+    /// http://fantom1x.blog130.fc2.com/blog-entry-391.html
+    /// </summary>
+    public static string Dump<T>(this IEnumerable<T> source)
     {
-        for (int i = 0; i < data.GetLength(0); i++)
-        {
-            string str = "";
-            for (int j = 0; j < data.GetLength(1); j++)
-            {
-                str = str + data[j, i] + " ";
-            }
-            Debug.Log(str);
-        }
+        return (source == null) ? "[]"
+            : ("[" + string.Join(", ", source.Select(e => e.ToString()).ToArray()) + "]");
+    }
+
+    /// <summary>
+    /// コレクションのダンプ（string.Format 付き）
+    /// 2021/01/11 Fantom
+    /// http://fantom1x.blog130.fc2.com/blog-entry-391.html
+    /// </summary>
+    public static string Dump<T>(this IEnumerable<T> source, string format)
+    {
+        return (source == null) ? "[]"
+            : ("[" + string.Join(", ", source.Select(e => string.Format(format, e)).ToArray()) + "]");
     }
 }

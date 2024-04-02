@@ -5,117 +5,316 @@ using System.Linq;
 
 public class AStar
 {
-    public struct GridNode
+    /// A-starノード.
+    private class ANode
     {
-        public Vector2Int position { get; set; }//このグリッドのポジション
-        public Vector2Int parentIndex { get; set; }//このグリッドのリンク先　Vector2Int(x , y)
-        public float score { get; set; }// 移動に必要なコスト　＋　現在の位置とゴール地点の距離　Heu + Cost
-        public float Heu { get; set; } // 現在の位置とゴール地点の距離　Vector2Int.Distance(grid_position, goal)
-        public float cost { get; set; } // 移動に必要なコスト　cell_size * n
-        public char[,] layer { get; set; }//レイヤー番号
-
-        public override string ToString()
+        private enum eStatus
         {
-            return "now:" + position + "  parent:" + parentIndex + "  Heu:" + Heu + "  score:" + score + "  cost:" + cost + "  layer:" + layer;
+            None,
+            Open,
+            Closed,
+        }
+
+        /// ステータス
+        private eStatus _status = eStatus.None;
+
+        /// 実コスト
+        private int _cost = 0;
+
+        /// ヒューリスティック・コスト
+        private int _heuristic = 0;
+
+        /// 親ノード
+        private ANode _parent = null;
+
+        /// 座標
+        private int _x = 0;
+
+        private int _y = 0;
+
+        public int X
+        {
+            get { return _x; }
+        }
+
+        public int Y
+        {
+            get { return _y; }
+        }
+
+        public int Cost
+        {
+            get { return _cost; }
+        }
+
+        /// コンストラクタ.
+        public ANode(int x, int y)
+        {
+            _x = x;
+            _y = y;
+        }
+
+        /// スコアを計算する.
+        public int GetScore()
+        {
+            return _cost + _heuristic;
+        }
+
+        /// ヒューリスティック・コストの計算.
+        public void CalcHeuristic(bool allowdiag, int xgoal, int ygoal)
+        {
+            if (allowdiag)
+            {
+                // 斜め移動あり
+                var dx = (int)Mathf.Abs(xgoal - X);
+                var dy = (int)Mathf.Abs(ygoal - Y);
+                // 大きい方をコストにする
+                _heuristic = dx > dy ? dx : dy;
+            }
+            else
+            {
+                // 縦横移動のみ
+                var dx = Mathf.Abs(xgoal - X);
+                var dy = Mathf.Abs(ygoal - Y);
+                _heuristic = (int)(dx + dy);
+            }
+            //Dump();
+        }
+
+        /// ステータスがNoneかどうか.
+        public bool IsNone()
+        {
+            return _status == eStatus.None;
+        }
+
+        /// ステータスをOpenにする.
+        public void Open(ANode parent, int cost)
+        {
+            //Debug.Log(string.Format("Open: ({0},{1})", X, Y));
+            _status = eStatus.Open;
+            _cost = cost;
+            _parent = parent;
+        }
+
+        /// ステータスをClosedにする.
+        public void Close()
+        {
+            //Debug.Log(string.Format("Closed: ({0},{1})", X, Y));
+            _status = eStatus.Closed;
+        }
+
+        /// パスを取得する
+        public void GetPath(List<Vector2Int> pList)
+        {
+            pList.Add(new Vector2Int(X, Y));
+            if (_parent != null)
+            {
+                _parent.GetPath(pList);
+            }
+        }
+
+        public void Dump()
+        {
+            Debug.Log(string.Format("({0},{1})[{2}] cost={3} heuris={4} score={5}", X, Y, _status, _cost, _heuristic, GetScore()));
+        }
+
+        public void DumpRecursive()
+        {
+            Dump();
+            if (_parent != null)
+            {
+                // 再帰的にダンプする.
+                _parent.DumpRecursive();
+            }
+        }
+    }
+
+    /// A-starノード管理.
+    private class ANodeMgr
+    {
+        /// 地形レイヤー.
+        private char[,] _layer;
+
+        /// 斜め移動を許可するかどうか.
+        private bool _allowdiag = true;
+
+        /// オープンリスト.
+        private List<ANode> _openList = null;
+
+        /// ノードインスタンス管理.
+        private Dictionary<int, ANode> _pool = null;
+
+        /// ゴール座標.
+        private int _xgoal = 0;
+
+        private int _ygoal = 0;
+
+        public ANodeMgr(char[,] layer, int xgoal, int ygoal, bool allowdiag = true)
+        {
+            _layer = layer;
+            _allowdiag = allowdiag;
+            _openList = new List<ANode>();
+            _pool = new Dictionary<int, ANode>();
+            _xgoal = xgoal;
+            _ygoal = ygoal;
+        }
+
+        /// ノード生成する.
+        public ANode GetNode(int x, int y)
+        {
+            var idx = x + y;
+            if (_pool.ContainsKey(idx))
+            {
+                // 既に存在しているのでプーリングから取得.
+                return _pool[idx];
+            }
+
+            // ないので新規作成.
+            var node = new ANode(x, y);
+            _pool[idx] = node;
+            // ヒューリスティック・コストを計算する.
+            node.CalcHeuristic(_allowdiag, _xgoal, _ygoal);
+            return node;
+        }
+
+        /// ノードをオープンリストに追加する.
+        public void AddOpenList(ANode node)
+        {
+            _openList.Add(node);
+        }
+
+        /// ノードをオープンリストから削除する.
+        public void RemoveOpenList(ANode node)
+        {
+            _openList.Remove(node);
+        }
+
+        /// 指定の座標にあるノードをオープンする.
+        public ANode OpenNode(int x, int y, int cost, ANode parent)
+        {
+            // ノードを取得する.
+            var node = GetNode(x, y);
+            if (node.IsNone() == false)
+            {
+                // 既にOpenしているので何もしない
+                return null;
+            }
+
+            // Openする.
+            node.Open(parent, cost);
+            AddOpenList(node);
+
+            return node;
+        }
+
+        /// 周りをOpenする.
+        public void OpenAround(ANode parent)
+        {
+            var xbase = parent.X; // 基準座標(X).
+            var ybase = parent.Y; // 基準座標(Y).
+            var cost = parent.Cost; // コスト.
+            cost += 1; // 一歩進むので+1する.
+            if (_allowdiag)
+            {
+                // 8方向を開く.
+                for (int j = 0; j < 3; j++)
+                {
+                    for (int i = 0; i < 3; i++)
+                    {
+                        var x = xbase + i - 1; // -1～1
+                        var y = ybase + j - 1; // -1～1
+                        OpenNode(x, y, cost, parent);
+                    }
+                }
+            }
+            else
+            {
+                // 4方向を開く.
+                var x = xbase;
+                var y = ybase;
+                OpenNode(x - 1, y, cost, parent); // 右.
+                OpenNode(x, y - 1, cost, parent); // 上.
+                OpenNode(x + 1, y, cost, parent); // 左.
+                OpenNode(x, y + 1, cost, parent); // 下.
+            }
+        }
+
+        /// 最小スコアのノードを取得する.
+        public ANode SearchMinScoreNodeFromOpenList()
+        {
+            // 最小スコア
+            int min = 9999;
+            // 最小実コスト
+            int minCost = 9999;
+            ANode minNode = null;
+            foreach (ANode node in _openList)
+            {
+                int score = node.GetScore();
+                if (score > min)
+                {
+                    // スコアが大きい
+                    continue;
+                }
+                if (score == min && node.Cost >= minCost)
+                {
+                    // スコアが同じときは実コストも比較する
+                    continue;
+                }
+
+                // 最小値更新.
+                min = score;
+                minCost = node.Cost;
+                minNode = node;
+            }
+            return minNode;
         }
     }
 
     //探索する
     public List<Vector2Int> Serch(Vector2Int startPos, Vector2Int endPos, char[,] layer)
     {
-        Vector2Int goalIndex = new Vector2Int(endPos.x, endPos.y);
-        //経路完成後のList作成に使う
-        Vector2Int finalFlag;
-        //ノード管理用変数
-        Vector2Int nodeIndex;
-        Dictionary<Vector2Int, GridNode> openList;
-        openList = new Dictionary<Vector2Int, GridNode>();
-        Dictionary<Vector2Int, GridNode> closeList;
-        closeList = new Dictionary<Vector2Int, GridNode>();
-
-        //スタートノードを生成＆諸々初期化
-        GridNode node = new GridNode();
-        node.position = startPos;
-        node.Heu = Vector2Int.Distance(
-            new Vector2Int(startPos.x, startPos.y),
-            new Vector2Int(endPos.x, endPos.y)
-        );
-        node.score = node.Heu;
-        node.cost = 0;
-        node.layer = layer;
-        //Helper.dumpCharArray(node.layer);
-
-        finalFlag = node.parentIndex;
-        nodeIndex = (Vector2Int)node.position;
-        openList.Add(nodeIndex, node);
-
-        int i = 1;//何回回ったか見る為のデバック変数
-
-        while (openList?.Count > 0) //オープンリストが空でない
+        List<Vector2Int> pList = new List<Vector2Int>();
+        // A-star実行.
         {
-            //Debug.Log("スタート:" + i + "回目;" + node.ToString());
-            i++;
+            // 斜め移動を許可
+            var allowdiag = false;
+            var mgr = new ANodeMgr(layer, endPos.x, endPos.y, allowdiag);
+            // スタート地点のノード取得
+            // スタート地点なのでコストは「0」
+            ANode node = mgr.OpenNode(startPos.x, endPos.y, 0, null);
+            mgr.AddOpenList(node);
 
-            //Dictionaryをソートしてノードを更新する
-            var sortList = openList.OrderBy((score) => score.Value.score);
-            node = sortList.ElementAt(0).Value;
-            nodeIndex = sortList.ElementAt(0).Key;
-
-            //経路が完成
-            if (nodeIndex == goalIndex)
+            // 試行回数。1000回超えたら強制中断
+            int cnt = 0;
+            while (cnt < 1000)
             {
-                List<Vector2Int> successList;
-                successList = new List<Vector2Int>();
-                //ゴールからスタートまでの最短経路を抽出する
-                while (nodeIndex != finalFlag)
+                mgr.RemoveOpenList(node);
+                // 周囲を開く
+                mgr.OpenAround(node);
+                // 最小スコアのノードを探す.
+                node = mgr.SearchMinScoreNodeFromOpenList();
+                if (node == null)
                 {
-                    successList.Add(nodeIndex);
-                    node = closeList[node.parentIndex];
-                    //Debug.DrawLine(nodeIndex, node.parentIndex, Color.red, 3.5f);
-                    nodeIndex = node.parentIndex;
+                    // 袋小路なのでおしまい.
+                    Debug.Log("Not found path.");
+                    break;
                 }
-                successList.Add(nodeIndex);
 
-                Debug.Log(successList.Count + "マスでゴール");
-                successList.Reverse();//反転して結果を返す
-                return successList;
-            }
-            else
-            {
-                //現在のノードをクローズに移す
-                openList.Remove(nodeIndex);
-                closeList.Add(nodeIndex, node);
-                //現在のノードに隣接する8方向ノードを調べる
-                for (int w = -1; w < 2; w++)
+                if (node.X == endPos.x && node.Y == endPos.y)
                 {
-                    for (int h = -1; h < 2; h++)
-                    {
-                        if (!(w == 0 && h == 0))//自分自身でない
-                        {
-                            //クローズリストに含まれてなければ
-                            if (!closeList.ContainsKey(new Vector2Int(nodeIndex.x + w, nodeIndex.y + h)))
-                            {
-                                //オープンリストに含まれてなければ
-                                if (!openList.ContainsKey(new Vector2Int(nodeIndex.x + w, nodeIndex.y + h)))
-                                {
-                                    GridNode nextNode = new GridNode();
-                                    nextNode.position = node.position + new Vector2Int(w, h);
-                                    nextNode.parentIndex = (Vector2Int)node.position + new Vector2Int(0, 0);
-                                    nextNode.Heu = Vector2Int.Distance(nextNode.position, endPos);
-                                    nextNode.cost = node.cost;
-                                    nextNode.score = nextNode.Heu + nextNode.cost;
-                                    nextNode.layer = node.layer;
-
-                                    openList.Add((Vector2Int)nextNode.position + new Vector2Int(0, 0), nextNode);
-                                    //Debug.Log(nextNode.ToString());
-                                }
-                            }
-                        }
-                    }
+                    // ゴールにたどり着いた.
+                    //Debug.Log("Success.");
+                    mgr.RemoveOpenList(node);
+                    //node.DumpRecursive();
+                    // パスを取得する
+                    node.GetPath(pList);
+                    // 反転する
+                    pList.Reverse();
+                    break;
                 }
             }
         }
-        //ゴールに辿りつけなかった場合
+
         return new List<Vector2Int>();
     }
 }

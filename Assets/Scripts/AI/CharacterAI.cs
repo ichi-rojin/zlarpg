@@ -15,32 +15,32 @@ public class CharacterAI : MonoBehaviour
 
     private eState _state = eState.Exec;
 
-    private Transform player; //Prefab
+    private Transform _player; //Prefab
 
     private Vector2Int _pos;
+    List<Vector2Int> _route;
 
-    private GameObject managers;
-    private MapManager mapManager;
+    private GameObject _managers;
+    private MapManager _mapManager;
 
     // Start is called before the first frame update
     private IEnumerator Start()
     {
-        managers = GameObject.Find("Managers");
-        mapManager = managers.GetComponent<MapManager>();
+        _managers = GameObject.Find("Managers");
+        _mapManager = _managers.GetComponent<MapManager>();
 
-        player = this.gameObject.transform;
-        char[,] map = mapManager.map;
+        _player = this.gameObject.transform;
+        char[,] map = _mapManager.map;
 
         yield return new WaitForSeconds(0.1f);
 
         {
             Vector2Int startPos = _pos;
-            Vector2Int endPos = mapManager.GetRandomCoord();
+            Vector2Int endPos = _mapManager.GetRandomCoord();
             Debug.Log(startPos);
             Debug.Log(endPos);
             AStar aStar = new AStar();
-            List<Vector2Int> route = aStar.Serch(startPos, endPos, map);
-            Debug.Log(string.Join(", ", route.Select(obj => obj.ToString())));
+            _route = aStar.Serch(startPos, endPos, map);
 
             yield return new WaitForSeconds(0.01f);
         }

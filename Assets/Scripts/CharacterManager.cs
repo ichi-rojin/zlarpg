@@ -6,20 +6,20 @@ using UnityEngine;
 public class CharacterManager : MonoBehaviour
 {
     [SerializeField]
-    private GameObject characterPrefab; //各種プレファブ
+    private GameObject _characterPrefab; //各種プレファブ
 
     [SerializeField]
-    private Transform parent; //マップのゲームオブジェクト
+    private Transform _parent; //マップのゲームオブジェクト
 
-    private MapManager mapManager;
+    private MapManager _mapManager;
 
     private void Start()
     {
-        mapManager = this.gameObject.GetComponent<MapManager>();
-        Vector2Int coord = mapManager.GetRandomCoord();
-        Vector2 pos = mapManager.GetWorldPositionFromTile(coord.x, coord.y); // 基点の座標を元に変数posを宣言
+        _mapManager = this.gameObject.GetComponent<MapManager>();
+        Vector2Int coord = _mapManager.GetRandomCoord();
+        Vector2 pos = _mapManager.GetWorldPositionFromTile(coord.x, coord.y); // 基点の座標を元に変数posを宣言
 
-        GameObject chara = Instantiate(characterPrefab, pos, Quaternion.Euler(0, 0, 0f), parent);
+        GameObject chara = Instantiate(_characterPrefab, pos, Quaternion.Euler(0, 0, 0f), _parent);
         CharacterAI charaAI = chara.GetComponent<CharacterAI>();
         charaAI.setPos(new Vector2Int(coord.x, coord.y));
     }
