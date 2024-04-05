@@ -22,6 +22,8 @@ public class CharacterAI : MonoBehaviour
 
     private GameObject _managers;
     private MapManager _mapManager;
+    char[,] _map;
+    int[,] _costMap;
 
     // Start is called before the first frame update
     private IEnumerator Start()
@@ -30,53 +32,66 @@ public class CharacterAI : MonoBehaviour
         _mapManager = _managers.GetComponent<MapManager>();
 
         _player = this.gameObject.transform;
-        char[,] map = _mapManager.map;
-        int[,] costMap = new int[map.GetLength(0), map.GetLength(1)];
+        _map = _mapManager.map;
+        _costMap = new int[_map.GetLength(0), _map.GetLength(1)];
 
         yield return new WaitForSeconds(0.1f);
 
+        setRoute();
+        Debug.Log(_route.Dump());
+        yield return new WaitForSeconds(0.1f);
+        // プレイヤーを移動させる.
+        StartCoroutine("Move");
+    }
+
+    private void setRoute()
+    {
+        Vector2Int startPos = _pos;
+        Vector2Int endPos = _mapManager.GetRandomCoord();
+        Debug.Log(startPos);
+        Debug.Log(endPos);
+        AStar aStar = new AStar();
+
+        for (int i = 0, size_i = _map.GetLength(0); i < size_i; i++)
         {
-            Vector2Int startPos = _pos;
-            Vector2Int endPos = _mapManager.GetRandomCoord();
-            Debug.Log(startPos);
-            Debug.Log(endPos);
-            AStar aStar = new AStar();
-
-            for (int i = 0, size_i = map.GetLength(0); i < size_i; i++)
+            for (int j = 0, size_j = _map.GetLength(1); j < size_j; j++)
             {
-                for (int j = 0, size_j = map.GetLength(1); j < size_j; j++)
+                var num = 0;
+                switch (_map[i, j])
                 {
-                    var num = 0;
-                    switch (map[i, j])
-                    {
-                        case 'g':
-                            num = 1;
-                            break;
+                    case 'g':
+                        num = 1;
+                        break;
 
-                        case 'w':
-                            num = 100;
-                            break;
+                    case 'w':
+                        num = 1000;
+                        break;
 
-                        case 's':
-                            num = 10;
-                            break;
-                    }
-                    costMap[i, j] = num;
+                    case 's':
+                        num = 5;
+                        break;
                 }
+                _costMap[i, j] = num;
             }
-
-            _route = aStar.Serch(startPos, endPos, costMap);
-            yield return new WaitForSeconds(1f);
-            Debug.Log(_route.Dump());
-            // プレイヤーを移動させる.
-            foreach (var p in _route)
-            {
-                _player.position = _mapManager.GetWorldPositionFromTile(p.x, p.y);
-                yield return new WaitForSeconds(0.1f);
-            }
-
-            yield return new WaitForSeconds(0.01f);
         }
+
+        _route = aStar.Serch(startPos, endPos, _costMap);
+    }
+    IEnumerator Move()
+    {
+        foreach (var p in _route)
+        {
+            _player.position = _mapManager.GetWorldPositionFromTile(p.x, p.y);
+            setPos(p);
+            yield return new WaitForSeconds(0.2f);
+        }
+
+        yield return new WaitForSeconds(0.01f);
+
+        setRoute();
+        Debug.Log(_route.Dump());
+        yield return new WaitForSeconds(0.01f);
+        StartCoroutine("Move");
     }
 
     public void setPos(Vector2Int pos)
