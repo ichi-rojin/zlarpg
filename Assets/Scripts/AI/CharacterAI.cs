@@ -18,7 +18,7 @@ public class CharacterAI : MonoBehaviour
     private Transform _player; //Prefab
 
     private Vector2Int _pos;
-    List<Vector2Int> _route;
+    private List<Vector2Int> _route;
 
     private GameObject _managers;
     private MapManager _mapManager;
@@ -31,6 +31,7 @@ public class CharacterAI : MonoBehaviour
 
         _player = this.gameObject.transform;
         char[,] map = _mapManager.map;
+        int[,] costMap = new int[map.GetLength(0), map.GetLength(1)];
 
         yield return new WaitForSeconds(0.1f);
 
@@ -40,7 +41,39 @@ public class CharacterAI : MonoBehaviour
             Debug.Log(startPos);
             Debug.Log(endPos);
             AStar aStar = new AStar();
-            _route = aStar.Serch(startPos, endPos, map);
+
+            for (int i = 0, size_i = map.GetLength(0); i < size_i; i++)
+            {
+                for (int j = 0, size_j = map.GetLength(1); j < size_j; j++)
+                {
+                    var num = 0;
+                    switch (map[i, j])
+                    {
+                        case 'g':
+                            num = 1;
+                            break;
+
+                        case 'w':
+                            num = 100;
+                            break;
+
+                        case 's':
+                            num = 10;
+                            break;
+                    }
+                    costMap[i, j] = num;
+                }
+            }
+
+            _route = aStar.Serch(startPos, endPos, costMap);
+            yield return new WaitForSeconds(1f);
+            Debug.Log(_route.Dump());
+            // ƒvƒŒƒCƒ„[‚ðˆÚ“®‚³‚¹‚é.
+            foreach (var p in _route)
+            {
+                _player.position = _mapManager.GetWorldPositionFromTile(p.x, p.y);
+                yield return new WaitForSeconds(0.1f);
+            }
 
             yield return new WaitForSeconds(0.01f);
         }

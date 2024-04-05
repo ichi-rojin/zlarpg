@@ -133,7 +133,10 @@ public class AStar
     private class ANodeMgr
     {
         /// 地形レイヤー.
-        private char[,] _layer;
+        private int[,] _layer;
+
+        /// ノードインスタンス管理.
+        private ANode[,] _pool;
 
         /// 斜め移動を許可するかどうか.
         private bool _allowdiag = true;
@@ -141,20 +144,17 @@ public class AStar
         /// オープンリスト.
         private List<ANode> _openList = null;
 
-        /// ノードインスタンス管理.
-        private Dictionary<int, ANode> _pool = null;
-
         /// ゴール座標.
         private int _xgoal = 0;
 
         private int _ygoal = 0;
 
-        public ANodeMgr(char[,] layer, int xgoal, int ygoal, bool allowdiag = true)
+        public ANodeMgr(int[,] layer, int xgoal, int ygoal, bool allowdiag = true)
         {
             _layer = layer;
+            _pool = new ANode[_layer.GetLength(0), _layer.GetLength(1)];
             _allowdiag = allowdiag;
             _openList = new List<ANode>();
-            _pool = new Dictionary<int, ANode>();
             _xgoal = xgoal;
             _ygoal = ygoal;
         }
@@ -162,16 +162,16 @@ public class AStar
         /// ノード生成する.
         public ANode GetNode(int x, int y)
         {
-            var idx = x + y;
-            if (_pool.ContainsKey(idx))
+            if (_pool[x, y] != null)
             {
                 // 既に存在しているのでプーリングから取得.
-                return _pool[idx];
+                return _pool[x, y];
             }
 
-            // ないので新規作成.
+            // poolになければ新規作成.
             var node = new ANode(x, y);
-            _pool[idx] = node;
+            _pool[x, y] = node;
+
             // ヒューリスティック・コストを計算する.
             node.CalcHeuristic(_allowdiag, _xgoal, _ygoal);
             return node;
@@ -199,9 +199,9 @@ public class AStar
                 // 既にOpenしているので何もしない
                 return null;
             }
-
+            int _cost = (int)_layer[x, y] + (int)cost;//マップの移動コストと合算
             // Openする.
-            node.Open(parent, cost);
+            node.Open(parent, _cost);
             AddOpenList(node);
 
             return node;
@@ -271,7 +271,7 @@ public class AStar
     }
 
     //探索する
-    public List<Vector2Int> Serch(Vector2Int startPos, Vector2Int endPos, char[,] layer)
+    public List<Vector2Int> Serch(Vector2Int startPos, Vector2Int endPos, int[,] layer)
     {
         List<Vector2Int> pList = new List<Vector2Int>();
         // A-star実行.
@@ -281,12 +281,12 @@ public class AStar
             var mgr = new ANodeMgr(layer, endPos.x, endPos.y, allowdiag);
             // スタート地点のノード取得
             // スタート地点なのでコストは「0」
-            ANode node = mgr.OpenNode(startPos.x, endPos.y, 0, null);
+            ANode node = mgr.OpenNode(startPos.x, startPos.y, 0, null);
             mgr.AddOpenList(node);
 
-            // 試行回数。1000回超えたら強制中断
+            // 試行回数。100回超えたら強制中断
             int cnt = 0;
-            while (cnt < 1000)
+            while (cnt < 100)
             {
                 mgr.RemoveOpenList(node);
                 // 周囲を開く
@@ -315,6 +315,6 @@ public class AStar
             }
         }
 
-        return new List<Vector2Int>();
+        return pList;
     }
 }
