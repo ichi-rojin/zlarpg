@@ -15,9 +15,9 @@ public class CharacterAI : MonoBehaviour
 
     private eState _state = eState.Exec;
 
-    private Transform _player; //Prefab
+    private Character _character; //ç¿ïW
+    private Transform _transform; //ç¿ïW
 
-    private Vector2Int _pos;
     private List<Vector2Int> _route;
 
     private GameObject _managers;
@@ -30,8 +30,9 @@ public class CharacterAI : MonoBehaviour
     {
         _managers = GameObject.Find("Managers");
         _mapManager = _managers.GetComponent<MapManager>();
+        _character = this.gameObject.GetComponent<Character>();
+        _transform = this.gameObject.transform;
 
-        _player = this.gameObject.transform;
         _map = _mapManager.map;
         _costMap = new int[_map.GetLength(0), _map.GetLength(1)];
 
@@ -46,7 +47,7 @@ public class CharacterAI : MonoBehaviour
 
     private void setRoute()
     {
-        Vector2Int startPos = _pos;
+        Vector2Int startPos = _character.pos;
         Vector2Int endPos = _mapManager.GetRandomCoord();
         Debug.Log(startPos);
         Debug.Log(endPos);
@@ -82,11 +83,11 @@ public class CharacterAI : MonoBehaviour
     {
         foreach (var p in _route)
         {
-            _player.DOMove(
+            _transform.DOMove(
                 _mapManager.GetWorldPositionFromTile(p.x, p.y),
                 0.2f
             ).SetEase(Ease.Linear);
-            setPos(p);
+            _character.setPos(p);
             yield return new WaitForSeconds(0.2f);
         }
 
@@ -96,10 +97,5 @@ public class CharacterAI : MonoBehaviour
         Debug.Log(_route.Dump());
         yield return new WaitForSeconds(0.01f);
         StartCoroutine("Move");
-    }
-
-    public void setPos(Vector2Int pos)
-    {
-        _pos = pos;
     }
 }
