@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
+using DG.Tweening;
 
 public class CharacterAI : MonoBehaviour
 {
@@ -22,8 +22,8 @@ public class CharacterAI : MonoBehaviour
 
     private GameObject _managers;
     private MapManager _mapManager;
-    char[,] _map;
-    int[,] _costMap;
+    private char[,] _map;
+    private int[,] _costMap;
 
     // Start is called before the first frame update
     private IEnumerator Start()
@@ -77,11 +77,15 @@ public class CharacterAI : MonoBehaviour
 
         _route = aStar.Serch(startPos, endPos, _costMap);
     }
-    IEnumerator Move()
+
+    private IEnumerator Move()
     {
         foreach (var p in _route)
         {
-            _player.position = _mapManager.GetWorldPositionFromTile(p.x, p.y);
+            _player.DOMove(
+                _mapManager.GetWorldPositionFromTile(p.x, p.y),
+                0.2f
+            ).SetEase(Ease.Linear);
             setPos(p);
             yield return new WaitForSeconds(0.2f);
         }
