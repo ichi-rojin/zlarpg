@@ -92,6 +92,20 @@ public class MapManager : MonoBehaviour
         return new Vector2(x * _tileSize, (_rowLength - y) * _tileSize) - _mapCenterPos;
     }
 
+    public Vector2Int GetTilePosFromWorldPosition(float x, float y)
+    {
+        return new Vector2Int(
+            (int)(x / _tileSize),
+            (int)(_rowLength - (y / _tileSize))
+        );
+    }
+
+    public Vector2 GetNormalizeWorldPosition(float x, float y)
+    {
+        Vector2Int p = GetTilePosFromWorldPosition(x, y);
+        return GetWorldPositionFromTile(p.x, p.y);
+    }
+
     //スポーン座標を取得
     public Vector2Int GetRandomCoord(char type = 'g')
     {
