@@ -38,14 +38,14 @@ public class CharacterAI : MonoBehaviour
 
         yield return new WaitForSeconds(0.1f);
 
-        setRoute();
+        SetRoute();
         Debug.Log(_route.Dump());
         yield return new WaitForSeconds(0.1f);
         // ÉvÉåÉCÉÑÅ[Çà⁄ìÆÇ≥ÇπÇÈ.
         StartCoroutine("Move");
     }
 
-    private void setRoute()
+    private void SetRoute()
     {
         Vector2Int startPos = _character.pos;
         Vector2Int endPos = _mapManager.GetRandomCoord();
@@ -87,13 +87,13 @@ public class CharacterAI : MonoBehaviour
                 _mapManager.GetWorldPositionFromTile(p.x, p.y),
                 0.2f
             ).SetEase(Ease.Linear);
-            _character.setPos(p);
+            _character.SetPos(p);
             yield return new WaitForSeconds(0.2f);
         }
 
         yield return new WaitForSeconds(0.01f);
 
-        setRoute();
+        SetRoute();
         Debug.Log(_route.Dump());
         yield return new WaitForSeconds(0.01f);
         StartCoroutine("Move");

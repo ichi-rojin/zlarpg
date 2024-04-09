@@ -26,7 +26,7 @@ public class CharacterManager : MonoBehaviour
             GameObject charaGameObject = Instantiate(_characterPrefab, pos, Quaternion.Euler(0, 0, 0f), _parent);
             CharacterAI charaAI = charaGameObject.GetComponent<CharacterAI>();
             Character character = charaGameObject.GetComponent<Character>();
-            character.setPos(new Vector2Int(coord.x, coord.y));
+            character.SetPos(new Vector2Int(coord.x, coord.y));
         }
     }
 

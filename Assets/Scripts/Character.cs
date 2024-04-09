@@ -22,7 +22,7 @@ public class Character : MonoBehaviour
     {
     }
 
-    public void setPos(Vector2Int pos)
+    public void SetPos(Vector2Int pos)
     {
         _pos = pos;
     }
