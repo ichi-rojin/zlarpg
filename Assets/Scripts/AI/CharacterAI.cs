@@ -50,7 +50,6 @@ public class CharacterAI : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
 
         SetRoute();
-        Debug.Log(_route.Dump());
         yield return new WaitForSeconds(0.1f);
         // ƒvƒŒƒCƒ„[‚ğˆÚ“®‚³‚¹‚é.
         StartCoroutine("Move");
@@ -104,8 +103,6 @@ public class CharacterAI : MonoBehaviour
     {
         Vector2Int startPos = _character.pos;
         Vector2Int endPos = GetDestination();
-        Debug.Log(startPos);
-        Debug.Log(endPos);
         AStar aStar = new AStar();
 
         for (int i = 0, size_i = _map.GetLength(0); i < size_i; i++)
@@ -144,7 +141,6 @@ public class CharacterAI : MonoBehaviour
             ).SetEase(Ease.Linear);
 
             SetOrientation(_character.pos, p);
-            Debug.Log(_orientation);
 
             _character.SetPos(p);
             yield return new WaitForSeconds(0.2f);
@@ -153,7 +149,6 @@ public class CharacterAI : MonoBehaviour
         yield return new WaitForSeconds(0.01f);
 
         SetRoute();
-        Debug.Log(_route.Dump());
         yield return new WaitForSeconds(0.01f);
         StartCoroutine("Move");
     }
