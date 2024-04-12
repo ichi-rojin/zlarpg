@@ -305,7 +305,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6e5702d7b9476144a03ce3e8a0813fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterPrefab: {fileID: 7620391073830392124, guid: 8e2cf664ca75049488f68303f03acf64, type: 3}
+  _characterPrefab: {fileID: 1883682531497913629, guid: 8e2cf664ca75049488f68303f03acf64, type: 3}
   _parent: {fileID: 1184960657}
 --- !u!114 &730312866
 MonoBehaviour:

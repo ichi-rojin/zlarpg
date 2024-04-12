@@ -21,15 +21,19 @@ public class CharacterAI : MonoBehaviour
     private List<Vector2Int> _route;
 
     private GameObject _managers;
+    private GameObject _itemsParent; //マップのゲームオブジェクト
     private MapManager _mapManager;
     private char[,] _map;
     private int[,] _costMap;
+
+    private List<Vector2Int> sensed = new List<Vector2Int>();
 
     // Start is called before the first frame update
     private IEnumerator Start()
     {
         _managers = GameObject.Find("Managers");
         _mapManager = _managers.GetComponent<MapManager>();
+        _itemsParent = GameObject.Find("ItemBlocks");
         _character = this.gameObject.GetComponent<Character>();
         _transform = this.gameObject.transform;
 
@@ -118,9 +122,26 @@ public class CharacterAI : MonoBehaviour
         _route = aStar.Serch(startPos, endPos, _costMap);
     }
 
+    private void CreateSenseArea()
+    {
+        sensed.Clear();
+        if (_character.orientation == Character.eOrientation.East)
+        {
+            for (int x = 1; x <= _character.sense; x++)
+            {
+                for (int y = -1 * x; y <= (x - 1) * 2 + 1; y++)
+                {
+                    sensed.Add(new Vector2Int(_character.pos.x + x, _character.pos.y - y));
+                }
+            }
+        }
+    }
+
     private void Check()
     {
-        Debug.Log("check x:" + _character.pos.x + "y:" + _character.pos.y + " " + _character.orientation);
+        CreateSenseArea();
+        List<Item> items = new List<Item>();
+        _itemsParent.GetComponentsInChildren(items);
     }
 
     private IEnumerator Move()

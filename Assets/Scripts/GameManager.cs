@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     private GameObject _treasureChestPrefab; //各種プレファブ
 
     [SerializeField]
-    private Transform _itemsParent; //マップのゲームオブジェクト
+    private Transform _itemsParent; //アイテムの親ゲームオブジェクト
 
     // Start is called before the first frame update
     private void Start()
@@ -26,7 +26,9 @@ public class GameManager : MonoBehaviour
         {
             Vector2 mapPos = Input.mousePosition;
             Vector2 tilePos = _mapManager.GetNormalizeWorldPosition(mapPos.x, mapPos.y);
-            Instantiate(_treasureChestPrefab, tilePos, Quaternion.Euler(0, 0, 0f), _itemsParent);
+            Vector2Int tileIndex = _mapManager.GetTilePosFromWorldPosition(mapPos.x, mapPos.y);
+            GameObject treasureChest = Instantiate(_treasureChestPrefab, tilePos, Quaternion.Euler(0, 0, 0f), _itemsParent);
+            treasureChest.GetComponent<Item>().SetPos(tileIndex);
         }
     }
 }

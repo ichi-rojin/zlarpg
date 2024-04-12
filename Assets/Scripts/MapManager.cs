@@ -70,18 +70,21 @@ public class MapManager : MonoBehaviour
 
                 _map[x, y] = tileType;
 
-                Instantiate(_groundPrefab, pos, Quaternion.Euler(0, 0, 0f), _mapBlocks);
+                GameObject mapTip;
+
+                mapTip = Instantiate(_groundPrefab, pos, Quaternion.Euler(0, 0, 0f), _mapBlocks);
 
                 switch (tileType)
                 {
                     case 'w':
-                        Instantiate(_wallPrefab, pos, Quaternion.Euler(0, 0, 0f), _mapBlocks);
+                        mapTip = Instantiate(_wallPrefab, pos, Quaternion.Euler(0, 0, 0f), _mapBlocks);
                         break;
 
                     case 's':
-                        Instantiate(_sectionLinePrefab, pos, Quaternion.Euler(0, 0, 0f), _mapBlocks);
+                        mapTip = Instantiate(_sectionLinePrefab, pos, Quaternion.Euler(0, 0, 0f), _mapBlocks);
                         break;
                 }
+                mapTip.GetComponent<Map>().SetPos(new Vector2Int(x, y));
             }
         }
     }
@@ -110,7 +113,6 @@ public class MapManager : MonoBehaviour
     public Vector2Int GetRandomCoord(char type = 'g')
     {
         var value = _map.Cast<char>()//1ŽŸŒ³”z—ñ‚É–ß‚·
-
             .Select((d, i) => new
             {
                 X = i / _rowLength,
