@@ -15,17 +15,6 @@ public class CharacterAI : MonoBehaviour
 
     private eState _state = eState.Exec;
 
-    // 状態.
-    private enum eOrientation
-    {
-        East,
-        West,
-        South,
-        North,
-    }
-
-    private eOrientation _orientation = eOrientation.South;
-
     private Character _character; //座標
     private Transform _transform; //座標
 
@@ -49,8 +38,6 @@ public class CharacterAI : MonoBehaviour
 
         yield return new WaitForSeconds(0.1f);
 
-        SetRoute();
-        yield return new WaitForSeconds(0.1f);
         // プレイヤーを移動させる.
         StartCoroutine("Move");
     }
@@ -74,11 +61,11 @@ public class CharacterAI : MonoBehaviour
         {
             if (prev.x < next.x)
             {
-                _orientation = eOrientation.East;
+                _character.SetOrientation(Character.eOrientation.East);
             }
             else
             {
-                _orientation = eOrientation.West;
+                _character.SetOrientation(Character.eOrientation.West);
             }
             return;
         }
@@ -89,11 +76,11 @@ public class CharacterAI : MonoBehaviour
         {
             if (prev.y < next.y)
             {
-                _orientation = eOrientation.South;
+                _character.SetOrientation(Character.eOrientation.South);
             }
             else
             {
-                _orientation = eOrientation.North;
+                _character.SetOrientation(Character.eOrientation.North);
             }
             return;
         }
@@ -131,8 +118,16 @@ public class CharacterAI : MonoBehaviour
         _route = aStar.Serch(startPos, endPos, _costMap);
     }
 
+    private void Check()
+    {
+        Debug.Log("check x:" + _character.pos.x + "y:" + _character.pos.y + " " + _character.orientation);
+    }
+
     private IEnumerator Move()
     {
+        SetRoute();
+        yield return new WaitForSeconds(0.01f);
+
         foreach (var p in _route)
         {
             _transform.DOMove(
@@ -143,12 +138,10 @@ public class CharacterAI : MonoBehaviour
             SetOrientation(_character.pos, p);
 
             _character.SetPos(p);
+            Check();
             yield return new WaitForSeconds(0.2f);
         }
 
-        yield return new WaitForSeconds(0.01f);
-
-        SetRoute();
         yield return new WaitForSeconds(0.01f);
         StartCoroutine("Move");
     }
