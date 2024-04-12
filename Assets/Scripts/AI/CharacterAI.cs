@@ -15,6 +15,17 @@ public class CharacterAI : MonoBehaviour
 
     private eState _state = eState.Exec;
 
+    // èÛë‘.
+    private enum eOrientation
+    {
+        East,
+        West,
+        South,
+        North,
+    }
+
+    private eOrientation _orientation = eOrientation.South;
+
     private Character _character; //ç¿ïW
     private Transform _transform; //ç¿ïW
 
@@ -45,10 +56,54 @@ public class CharacterAI : MonoBehaviour
         StartCoroutine("Move");
     }
 
+    private Vector2Int GetDestination()
+    {
+        return _mapManager.GetRandomCoord();
+    }
+
+    private void SetOrientation(Vector2Int prev, Vector2Int next)
+    {
+        if (
+            prev.x == next.x
+            &&
+            prev.y == next.y
+        ) return;
+
+        if (
+            prev.y == next.y
+        )
+        {
+            if (prev.x < next.x)
+            {
+                _orientation = eOrientation.East;
+            }
+            else
+            {
+                _orientation = eOrientation.West;
+            }
+            return;
+        }
+
+        if (
+            prev.x == next.x
+        )
+        {
+            if (prev.y < next.y)
+            {
+                _orientation = eOrientation.South;
+            }
+            else
+            {
+                _orientation = eOrientation.North;
+            }
+            return;
+        }
+    }
+
     private void SetRoute()
     {
         Vector2Int startPos = _character.pos;
-        Vector2Int endPos = _mapManager.GetRandomCoord();
+        Vector2Int endPos = GetDestination();
         Debug.Log(startPos);
         Debug.Log(endPos);
         AStar aStar = new AStar();
@@ -87,6 +142,10 @@ public class CharacterAI : MonoBehaviour
                 _mapManager.GetWorldPositionFromTile(p.x, p.y),
                 0.2f
             ).SetEase(Ease.Linear);
+
+            SetOrientation(_character.pos, p);
+            Debug.Log(_orientation);
+
             _character.SetPos(p);
             yield return new WaitForSeconds(0.2f);
         }
