@@ -8,12 +8,12 @@ public class CharacterAI : MonoBehaviour
     // 状態.
     private enum eState
     {
-        Exec, // 実行中.
+        Search, // 検索中.
         Walk, // 移動中.
-        End,  // おしまい.
+        Find, // 発見.
     }
 
-    private eState _state = eState.Exec;
+    private eState _state = eState.Search;
 
     private Character _character; //座標
     private Transform _transform; //座標
@@ -26,7 +26,9 @@ public class CharacterAI : MonoBehaviour
     private char[,] _map;
     private int[,] _costMap;
 
-    private List<Vector2Int> sensed = new List<Vector2Int>();
+    private List<Vector2Int> _sensed = new List<Vector2Int>();
+
+    Item _targetItem = null;
 
     // Start is called before the first frame update
     private IEnumerator Start()
@@ -43,6 +45,8 @@ public class CharacterAI : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
 
         // プレイヤーを移動させる.
+        SetRoute(GetDestination());
+        _state = eState.Walk;
         StartCoroutine("Move");
     }
 
@@ -90,10 +94,10 @@ public class CharacterAI : MonoBehaviour
         }
     }
 
-    private void SetRoute()
+    private void SetRoute(Vector2Int destination)
     {
         Vector2Int startPos = _character.pos;
-        Vector2Int endPos = GetDestination();
+        Vector2Int endPos = destination;
         AStar aStar = new AStar();
 
         for (int i = 0, size_i = _map.GetLength(0); i < size_i; i++)
@@ -124,31 +128,55 @@ public class CharacterAI : MonoBehaviour
 
     private void CreateSenseArea()
     {
-        sensed.Clear();
-        if (_character.orientation == Character.eOrientation.East)
+        _sensed.Clear();
+        for (int p1 = 1; p1 <= _character.sense; p1++)
         {
-            for (int x = 1; x <= _character.sense; x++)
+            for (int p2 = -1 * p1; p2 <= (p1 - 1) * 2 + 1; p2++)
             {
-                for (int y = -1 * x; y <= (x - 1) * 2 + 1; y++)
+                if (_character.orientation == Character.eOrientation.East)
                 {
-                    sensed.Add(new Vector2Int(_character.pos.x + x, _character.pos.y - y));
+                    _sensed.Add(new Vector2Int(_character.pos.x + p1, _character.pos.y + p2));
+                }
+                if (_character.orientation == Character.eOrientation.West)
+                {
+                    _sensed.Add(new Vector2Int(_character.pos.x - p1, _character.pos.y - p2));
+                }
+                if (_character.orientation == Character.eOrientation.South)
+                {
+                    _sensed.Add(new Vector2Int(_character.pos.x + p2, _character.pos.y + p1));
+                }
+                if (_character.orientation == Character.eOrientation.North)
+                {
+                    _sensed.Add(new Vector2Int(_character.pos.x + p2, _character.pos.y - p1));
                 }
             }
         }
     }
 
-    private void Check()
+    private Item FindItem()
     {
         CreateSenseArea();
         List<Item> items = new List<Item>();
+        List<Item> findedItems = new List<Item>();
         _itemsParent.GetComponentsInChildren(items);
+        foreach (var item in items)
+        {
+            if (_sensed.Contains(item.pos))
+            {
+                findedItems.Add(item);
+            }
+        }
+        if (findedItems.Count > 0)
+        {
+            var random = new System.Random();
+            var value = findedItems.GetRandom(random);
+            return value;
+        }
+        return null;
     }
 
     private IEnumerator Move()
     {
-        SetRoute();
-        yield return new WaitForSeconds(0.01f);
-
         foreach (var p in _route)
         {
             _transform.DOMove(
@@ -159,11 +187,26 @@ public class CharacterAI : MonoBehaviour
             SetOrientation(_character.pos, p);
 
             _character.SetPos(p);
-            Check();
             yield return new WaitForSeconds(0.2f);
+
+            if (!_targetItem)
+            {
+                _targetItem = FindItem();
+                if (_targetItem)
+                {
+                    SetRoute(_targetItem.pos);
+                    _state = eState.Find;
+                    break;
+                }
+            }
         }
 
         yield return new WaitForSeconds(0.01f);
+        if (_state != eState.Find)
+        {
+            SetRoute(GetDestination());
+        }
+        _state = eState.Walk;
         StartCoroutine("Move");
     }
 }

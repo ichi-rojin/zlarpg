@@ -27,4 +27,39 @@ public static class Extensions
         return (source == null) ? "[]"
             : ("[" + string.Join(", ", source.Select(e => string.Format(format, e)).ToArray()) + "]");
     }
+
+    /// <summary>
+    /// ƒ‰ƒ“ƒ_ƒ€‚ÉŽæ“¾
+    /// </summary>
+    public static T GetRandom<T>(this IEnumerable<T> source, Random random)
+    {
+        if (source == null) throw new ArgumentNullException(nameof(source));
+
+        var list = source as IList<T>;
+        if (list != null)
+        {
+            if (list.Count > 0) return list[random.Next(list.Count)];
+        }
+        else
+        {
+            using (var e = source.GetEnumerator())
+            {
+                if (e.MoveNext())
+                {
+                    int n = 1;
+                    T selected = default(T);
+                    do
+                    {
+                        if (random.Next(n) == 0)
+                            selected = e.Current;
+                        n++;
+                    } while (e.MoveNext());
+
+                    return selected;
+                }
+            }
+        }
+        throw new InvalidOperationException("source is empty");
+    }
+
 }
