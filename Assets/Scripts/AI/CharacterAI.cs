@@ -133,7 +133,7 @@ public class CharacterAI : MonoBehaviour
         List<Vector2Int> senses = new List<Vector2Int>();
         for (int p1 = 1; p1 <= _character.sense; p1++)
         {
-            for (int p2 = -1 * p1; p2 < (p1 - 1) * 2 + 1; p2++)
+            for (int p2 = -1 * p1; p2 < (p1 - 1) + 2; p2++)
             {
                 Vector2Int coord = new Vector2Int();
                 if (reverse != false)
@@ -153,43 +153,37 @@ public class CharacterAI : MonoBehaviour
     private void CreateSenseArea()
     {
         _sensed.Clear();
-        List<Vector2Int> senses = new List<Vector2Int>();
         Vector2Int senseNext1 = new Vector2Int();
         Vector2Int senseNext2 = new Vector2Int();
 
         if (_character.orientation == Character.eOrientation.East)
         {
-            senses = GetPerceptionCoords(1, 1, false);
+            _sensed = GetPerceptionCoords(1, 1, false);
             senseNext1 = _character.GetNormalizePosition(0, -1);
             senseNext2 = _character.GetNormalizePosition(0, 1);
         }
         if (_character.orientation == Character.eOrientation.West)
         {
-            senses = GetPerceptionCoords(-1, -1, false);
+            _sensed = GetPerceptionCoords(-1, -1, false);
             senseNext1 = _character.GetNormalizePosition(0, -1);
             senseNext2 = _character.GetNormalizePosition(0, 1);
         }
         if (_character.orientation == Character.eOrientation.South)
         {
-            senses = GetPerceptionCoords(1, 1, false);
+            _sensed = GetPerceptionCoords(1, 1, false);
             senseNext1 = _character.GetNormalizePosition(-1, 0);
             senseNext2 = _character.GetNormalizePosition(1, 0);
         }
         if (_character.orientation == Character.eOrientation.North)
         {
-            senses = GetPerceptionCoords(1, -1, false);
+            _sensed = GetPerceptionCoords(1, -1, false);
             senseNext1 = _character.GetNormalizePosition(-1, 0);
             senseNext2 = _character.GetNormalizePosition(1, 0);
         }
         //ŽüˆÍ‚ð’mŠo”ÍˆÍ‚ÉŠÜ‚ß‚é
-        if (senseNext1 != null) senses.Add(senseNext1);
-        if (senseNext2 != null) senses.Add(senseNext2);
-        senses.Add(_character.pos);
-
-        foreach (var sense in senses)
-        {
-            _sensed.Add(sense);
-        }
+        if (senseNext1 != null) _sensed.Add(senseNext1);
+        if (senseNext2 != null) _sensed.Add(senseNext2);
+        _sensed.Add(_character.pos);
     }
 
     private Item FindItem()
