@@ -128,30 +128,67 @@ public class CharacterAI : MonoBehaviour
         _route = aStar.Serch(startPos, endPos, _costMap);
     }
 
+    private List<Vector2Int> GetPerceptionCoords(int sign1, int sign2, bool reverse)
+    {
+        List<Vector2Int> senses = new List<Vector2Int>();
+        for (int p1 = 1; p1 <= _character.sense; p1++)
+        {
+            for (int p2 = -1 * p1; p2 < (p1 - 1) * 2 + 1; p2++)
+            {
+                Vector2Int coord = new Vector2Int();
+                if (reverse != false)
+                {
+                    coord = _character.GetNormalizePosition(p1 * sign1, p2 * sign2);
+                }
+                else
+                {
+                    coord = _character.GetNormalizePosition(p2 * sign2, p1 * sign1);
+                }
+                if (coord != null) senses.Add(coord);
+            }
+        }
+        return senses;
+    }
+
     private void CreateSenseArea()
     {
         _sensed.Clear();
-        for (int p1 = 0; p1 <= _character.sense; p1++)
+        List<Vector2Int> senses = new List<Vector2Int>();
+        Vector2Int senseNext1 = new Vector2Int();
+        Vector2Int senseNext2 = new Vector2Int();
+
+        if (_character.orientation == Character.eOrientation.East)
         {
-            for (int p2 = -1 * p1; p2 <= (p1 - 1) * 2 + 1; p2++)
-            {
-                if (_character.orientation == Character.eOrientation.East)
-                {
-                    _sensed.Add(new Vector2Int(_character.pos.x + p1, _character.pos.y + p2));
-                }
-                if (_character.orientation == Character.eOrientation.West)
-                {
-                    _sensed.Add(new Vector2Int(_character.pos.x - p1, _character.pos.y - p2));
-                }
-                if (_character.orientation == Character.eOrientation.South)
-                {
-                    _sensed.Add(new Vector2Int(_character.pos.x + p2, _character.pos.y + p1));
-                }
-                if (_character.orientation == Character.eOrientation.North)
-                {
-                    _sensed.Add(new Vector2Int(_character.pos.x + p2, _character.pos.y - p1));
-                }
-            }
+            senses = GetPerceptionCoords(1, 1, false);
+            senseNext1 = _character.GetNormalizePosition(0, -1);
+            senseNext2 = _character.GetNormalizePosition(0, 1);
+        }
+        if (_character.orientation == Character.eOrientation.West)
+        {
+            senses = GetPerceptionCoords(-1, -1, false);
+            senseNext1 = _character.GetNormalizePosition(0, -1);
+            senseNext2 = _character.GetNormalizePosition(0, 1);
+        }
+        if (_character.orientation == Character.eOrientation.South)
+        {
+            senses = GetPerceptionCoords(1, 1, false);
+            senseNext1 = _character.GetNormalizePosition(-1, 0);
+            senseNext2 = _character.GetNormalizePosition(1, 0);
+        }
+        if (_character.orientation == Character.eOrientation.North)
+        {
+            senses = GetPerceptionCoords(1, -1, false);
+            senseNext1 = _character.GetNormalizePosition(-1, 0);
+            senseNext2 = _character.GetNormalizePosition(1, 0);
+        }
+        //ŽüˆÍ‚ð’mŠo”ÍˆÍ‚ÉŠÜ‚ß‚é
+        if (senseNext1 != null) senses.Add(senseNext1);
+        if (senseNext2 != null) senses.Add(senseNext2);
+        senses.Add(_character.pos);
+
+        foreach (var sense in senses)
+        {
+            _sensed.Add(sense);
         }
     }
 
