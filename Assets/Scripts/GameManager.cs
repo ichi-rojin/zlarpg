@@ -25,8 +25,11 @@ public class GameManager : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             Vector2 mapPos = Input.mousePosition;
-            Vector2 tilePos = _mapManager.GetNormalizeWorldPosition(mapPos.x, mapPos.y);
+            var map = _mapManager.map;
             Vector2Int tileIndex = _mapManager.GetTilePosFromWorldPosition(mapPos.x, mapPos.y);
+            if (map[tileIndex.x, tileIndex.y] == 'w') return;
+
+            Vector2 tilePos = _mapManager.GetNormalizeWorldPosition(mapPos.x, mapPos.y);
             GameObject treasureChest = Instantiate(_treasureChestPrefab, tilePos, Quaternion.Euler(0, 0, 0f), _itemsParent);
             treasureChest.GetComponent<Item>().SetPos(tileIndex);
         }

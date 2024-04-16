@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using System.Reflection;
+using System;
 
 public class CharacterAI : MonoBehaviour
 {
@@ -28,7 +30,7 @@ public class CharacterAI : MonoBehaviour
 
     private List<Vector2Int> _sensed = new List<Vector2Int>();
 
-    Item _targetItem = null;
+    private Item _target = null;
 
     // Start is called before the first frame update
     private IEnumerator Start()
@@ -129,7 +131,7 @@ public class CharacterAI : MonoBehaviour
     private void CreateSenseArea()
     {
         _sensed.Clear();
-        for (int p1 = 1; p1 <= _character.sense; p1++)
+        for (int p1 = 0; p1 <= _character.sense; p1++)
         {
             for (int p2 = -1 * p1; p2 <= (p1 - 1) * 2 + 1; p2++)
             {
@@ -189,12 +191,39 @@ public class CharacterAI : MonoBehaviour
             _character.SetPos(p);
             yield return new WaitForSeconds(0.2f);
 
-            if (!_targetItem)
+            if (_target)
             {
-                _targetItem = FindItem();
-                if (_targetItem)
+                //射程内のターゲットに対してアクション
+                if (
+                    _character.pos == _target.pos
+                    ||
+                    _character.GetNormalizePosition(1, 0) == _target.pos
+                    ||
+                    _character.GetNormalizePosition(0, 1) == _target.pos
+                    ||
+                    _character.GetNormalizePosition(-1, 0) == _target.pos
+                    ||
+                    _character.GetNormalizePosition(0, -1) == _target.pos
+                )
                 {
-                    SetRoute(_targetItem.pos);
+                    Action(_target);
+                    _state = eState.Search;
+                    break;
+                }
+            }
+            else
+            {
+                if (_state == eState.Find)
+                {
+                    //発見物がなくなっていればルート再建策
+                    _state = eState.Search;
+                    break;
+                }
+                //知覚エリア内のターゲットを検索
+                _target = FindItem();
+                if (_target)
+                {
+                    SetRoute(_target.pos);
                     _state = eState.Find;
                     break;
                 }
@@ -208,5 +237,17 @@ public class CharacterAI : MonoBehaviour
         }
         _state = eState.Walk;
         StartCoroutine("Move");
+    }
+
+    private void Action(Item target)
+    {
+        Dictionary<string, int> provides = target.Provide();
+        target.Vanish();
+        foreach (var provide in provides)
+        {
+            Type t = _character.GetType();
+            MethodInfo mi = t.GetMethod(provide.Key);
+            object o = mi.Invoke(_character, new object[] { provide.Value });
+        }
     }
 }
