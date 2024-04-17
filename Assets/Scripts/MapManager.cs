@@ -34,6 +34,12 @@ public class MapManager : MonoBehaviour
     ; //マップの縦横サイズ
 
     private float _tileSize; //プレファブのサイズ
+
+    public float tileSize
+    {
+        get { return _tileSize; }
+    }
+
     private Vector2 _mapCenterPos;
 
     private void Start()

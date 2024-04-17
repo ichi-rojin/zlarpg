@@ -208,19 +208,25 @@ public class CharacterAI : MonoBehaviour
         return null;
     }
 
+    private float calcDurationBySpeed(int speed)
+    {
+        return _mapManager.tileSize / 100 / 4 * (3.0f - (float)speed / 10);
+    }
+
     private IEnumerator Move()
     {
+        float duration = calcDurationBySpeed(_character.speed);
         foreach (var p in _route)
         {
             _transform.DOMove(
                 _mapManager.GetWorldPositionFromTile(p.x, p.y),
-                0.2f
+                duration
             ).SetEase(Ease.Linear);
 
             SetOrientation(_character.pos, p);
 
             _character.SetPos(p);
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(duration);
 
             if (_target)
             {

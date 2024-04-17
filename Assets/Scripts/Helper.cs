@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-
 public static class Extensions
 {
     /// <summary>
@@ -62,4 +61,11 @@ public static class Extensions
         throw new InvalidOperationException("source is empty");
     }
 
+    public static T GetRandomByEnum<T>(this IEnumerable<T> source)
+    {
+        List<T> statusList = Enum.GetValues(typeof(T))
+            .Cast<T>()
+            .ToList();
+        return statusList.GetRandom(new System.Random());
+    }
 }
