@@ -18,22 +18,23 @@ public static partial class EnumExtend
     public static int GetUpRandomValue(this StatusType param)
     {
         int value = new int();
+        int lessI = 1;//intŒ^‚ÌRandom.Range‚Ímax‚ðŠÜ‚Ü‚È‚¢‚½‚ß
         switch (param)
         {
             case StatusType.Hp:
-                value = Random.Range(0, 10);
+                value = Random.Range(0, 10 + lessI);
                 break;
 
             case StatusType.Sense:
-                value = Random.Range(0, 1);
+                value = Random.Range(0, 1 + lessI);
                 break;
 
             case StatusType.Strength:
-                value = Random.Range(0, 5);
+                value = Random.Range(0, 5 + lessI);
                 break;
 
             case StatusType.Speed:
-                value = Random.Range(0, 1);
+                value = Random.Range(0, 1 + lessI);
                 break;
         }
         return value;
@@ -42,22 +43,23 @@ public static partial class EnumExtend
     public static int GetUpInitialValue(this StatusType param)
     {
         int value = new int();
+        int lessI = 1;//intŒ^‚ÌRandom.Range‚Ímax‚ðŠÜ‚Ü‚È‚¢‚½‚ß
         switch (param)
         {
             case StatusType.Hp:
-                value = Random.Range(100, 300);
+                value = Random.Range(100, 300 + lessI);
                 break;
 
             case StatusType.Sense:
-                value = Random.Range(2, 10);
+                value = Random.Range(2, 10 + lessI);
                 break;
 
             case StatusType.Strength:
-                value = Random.Range(5, 10);
+                value = Random.Range(5, 10 + lessI);
                 break;
 
             case StatusType.Speed:
-                value = Random.Range(1, 5);
+                value = Random.Range(1, 5 + lessI);
                 break;
         }
         return value;
