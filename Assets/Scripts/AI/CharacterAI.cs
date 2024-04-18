@@ -201,8 +201,7 @@ public class CharacterAI : MonoBehaviour
         }
         if (findedItems.Count > 0)
         {
-            var random = new System.Random();
-            var value = findedItems.GetRandom(random);
+            var value = findedItems.GetRandom();
             return value;
         }
         return null;

@@ -30,8 +30,9 @@ public static class Extensions
     /// <summary>
     /// ƒ‰ƒ“ƒ_ƒ€‚ÉŽæ“¾
     /// </summary>
-    public static T GetRandom<T>(this IEnumerable<T> source, Random random)
+    public static T GetRandom<T>(this IEnumerable<T> source)
     {
+        var random = new System.Random();
         if (source == null) throw new ArgumentNullException(nameof(source));
 
         var list = source as IList<T>;
@@ -66,6 +67,6 @@ public static class Extensions
         List<T> statusList = Enum.GetValues(typeof(T))
             .Cast<T>()
             .ToList();
-        return statusList.GetRandom(new System.Random());
+        return statusList.GetRandom();
     }
 }
