@@ -200,6 +200,11 @@ public class CharacterAI : MonoBehaviour
             if (_sensed.Contains(item.pos))
             {
                 findedItems.Add(item);
+            } else
+            {
+                //‹ŠE“à‚Ì”­Œ©•¨‚ª‚·‚Å‚É‚È‚­‚È‚Á‚Ä‚¢‚½‚ç‹L‰¯‚©‚çÁ‚·
+                _findMap[item.pos.x, item.pos.y] = 0;
+
             }
         }
         foreach (var find in findedItems)
