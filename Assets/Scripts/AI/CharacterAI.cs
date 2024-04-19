@@ -4,6 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using System.Reflection;
 using System;
+using System.Linq;
 
 public class CharacterAI : MonoBehaviour
 {
@@ -27,6 +28,7 @@ public class CharacterAI : MonoBehaviour
     private MapManager _mapManager;
     private char[,] _map;
     private int[,] _costMap;
+    private int[,] _findMap;//発見物メモリ
 
     private List<Vector2Int> _sensed = new List<Vector2Int>();
 
@@ -43,6 +45,7 @@ public class CharacterAI : MonoBehaviour
 
         _map = _mapManager.map;
         _costMap = new int[_map.GetLength(0), _map.GetLength(1)];
+        _findMap = new int[_map.GetLength(0), _map.GetLength(1)];
 
         yield return new WaitForSeconds(0.1f);
 
@@ -186,7 +189,7 @@ public class CharacterAI : MonoBehaviour
         _sensed.Add(_character.pos);
     }
 
-    private Item FindItem()
+    private void FindItems()
     {
         CreateSenseArea();
         List<Item> items = new List<Item>();
@@ -199,12 +202,31 @@ public class CharacterAI : MonoBehaviour
                 findedItems.Add(item);
             }
         }
-        if (findedItems.Count > 0)
+        foreach (var find in findedItems)
         {
-            var value = findedItems.GetRandom();
-            return value;
+            _findMap[find.pos.x, find.pos.y] = 1;
         }
-        return null;
+    }
+
+    private List<Item> GetFindItems()
+    {
+        List<Item> items = new List<Item>();
+        List<Vector2Int> findedList = new List<Vector2Int>();
+        List<Item> findedItems = new List<Item>();
+        _itemsParent.GetComponentsInChildren(items);
+        var findItems = _findMap.GetCoordByValue(1);
+        foreach (var item in findItems)
+        {
+            findedList.Add(new Vector2Int(item.X, item.Y));
+        }
+        foreach (var item in items)
+        {
+            if (findedList.Contains(item.pos))
+            {
+                findedItems.Add(item);
+            }
+        }
+        return findedItems;
     }
 
     private float calcDurationBySpeed(int speed)
@@ -256,7 +278,13 @@ public class CharacterAI : MonoBehaviour
                     break;
                 }
                 //知覚エリア内のターゲットを検索
-                _target = FindItem();
+                FindItems();
+                var findedItems = GetFindItems();
+
+                if (findedItems.Count > 0)
+                {
+                    _target = findedItems.GetRandom();
+                }
                 if (_target)
                 {
                     SetRoute(_target.pos);
@@ -279,6 +307,7 @@ public class CharacterAI : MonoBehaviour
     {
         Dictionary<string, int> provides = target.Provide();
         target.Vanish();
+        _findMap[target.pos.x, target.pos.y] = 0;//記憶から削除
         foreach (var provide in provides)
         {
             Type t = _character.GetType();
