@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class AStar
+public static class AStar
 {
     /// A-starÉmÅ[Éh.
     private class ANode
@@ -271,7 +271,7 @@ public class AStar
     }
 
     //íTçıÇ∑ÇÈ
-    public List<Vector2Int> Serch(Vector2Int startPos, Vector2Int endPos, int[,] layer)
+    public static List<Vector2Int> Serch(Vector2Int startPos, Vector2Int endPos, int[,] layer)
     {
         List<Vector2Int> pList = new List<Vector2Int>();
         // A-staré¿çs.

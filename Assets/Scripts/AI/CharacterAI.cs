@@ -53,12 +53,40 @@ public class CharacterAI : MonoBehaviour
         _costMap = new int[_map.GetLength(0), _map.GetLength(1)];
         _findMap = new int[_map.GetLength(0), _map.GetLength(1)];
 
+        makeCostMap();
+
         yield return new WaitForSeconds(0.1f);
 
         // ƒvƒŒƒCƒ„[‚ğˆÚ“®‚³‚¹‚é.
         SetRoute(GetDestination());
         _state = eState.Walk;
         StartCoroutine("Move");
+    }
+
+    private void makeCostMap()
+    {
+        for (int i = 0, size_i = _map.GetLength(0); i < size_i; i++)
+        {
+            for (int j = 0, size_j = _map.GetLength(1); j < size_j; j++)
+            {
+                var num = 0;
+                switch (_map[i, j])
+                {
+                    case 'g':
+                        num = 1;
+                        break;
+
+                    case 'w':
+                        num = 1000;
+                        break;
+
+                    case 's':
+                        num = 5;
+                        break;
+                }
+                _costMap[i, j] = num;
+            }
+        }
     }
 
     private Vector2Int GetDestination()
@@ -109,32 +137,8 @@ public class CharacterAI : MonoBehaviour
     {
         Vector2Int startPos = _character.pos;
         Vector2Int endPos = destination;
-        AStar aStar = new AStar();
 
-        for (int i = 0, size_i = _map.GetLength(0); i < size_i; i++)
-        {
-            for (int j = 0, size_j = _map.GetLength(1); j < size_j; j++)
-            {
-                var num = 0;
-                switch (_map[i, j])
-                {
-                    case 'g':
-                        num = 1;
-                        break;
-
-                    case 'w':
-                        num = 1000;
-                        break;
-
-                    case 's':
-                        num = 5;
-                        break;
-                }
-                _costMap[i, j] = num;
-            }
-        }
-
-        _route = aStar.Serch(startPos, endPos, _costMap);
+        _route = AStar.Serch(startPos, endPos, _costMap);
     }
 
     private List<Vector2Int> GetPerceptionCoords(int sign1, int sign2, bool reverse)
