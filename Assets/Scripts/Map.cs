@@ -9,7 +9,6 @@ public class Map : Token
     //キャラクターが侵入する際の挙動
     public bool GetAdvancePermission(Character character)
     {
-        CharacterAI charaAI = character.GetComponent<CharacterAI>();
         //キャラクターに進出能力があるかチェック
         var AdvancePermission = CheckAdvanceAbility(character);
         return AdvancePermission;

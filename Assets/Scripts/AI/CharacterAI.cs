@@ -63,28 +63,32 @@ public class CharacterAI : MonoBehaviour
         StartCoroutine("Move");
     }
 
+    private int getMapTipCost(char mapType)
+    {
+        switch (mapType)
+        {
+            case 'g':
+                return 1;
+                break;
+
+            case 'w':
+                return 1000;
+                break;
+
+            case 's':
+                return 5;
+                break;
+        }
+        return 0;
+    }
+
     private void makeCostMap()
     {
         for (int i = 0, size_i = _map.GetLength(0); i < size_i; i++)
         {
             for (int j = 0, size_j = _map.GetLength(1); j < size_j; j++)
             {
-                var num = 0;
-                switch (_map[i, j])
-                {
-                    case 'g':
-                        num = 1;
-                        break;
-
-                    case 'w':
-                        num = 1000;
-                        break;
-
-                    case 's':
-                        num = 5;
-                        break;
-                }
-                _costMap[i, j] = num;
+                _costMap[i, j] = getMapTipCost(_map[i, j]);
             }
         }
     }
@@ -244,6 +248,16 @@ public class CharacterAI : MonoBehaviour
         }
         foreach (var item in items)
         {
+            if (_costMap[item.pos.x, item.pos.y] > _character.jump)
+            {
+                //コストが踏破力を上回れば無視する
+                continue;
+            }
+            else
+            {
+                //コストが踏破力以下のときはマップコストを初期化する
+                _costMap[item.pos.x, item.pos.y] = getMapTipCost(_map[item.pos.x, item.pos.y]);
+            }
             if (findedList.Contains(item.pos))
             {
                 findedItems.Add(item);
@@ -260,12 +274,21 @@ public class CharacterAI : MonoBehaviour
     private IEnumerator Move()
     {
         float duration = calcDurationBySpeed(_character.speed);
+        var i = 0;
         foreach (var p in _route)
         {
             var findedMapTip = GetMapTip(p);
             var AdvancePermission = findedMapTip.GetAdvancePermission(_character);
             if (AdvancePermission == false)
             {
+                var goal = _route.LastOrDefault();
+                if (_findMap[goal.x, goal.y] > 0)
+                {
+                    //ルートの最終地点に発見物があれば、進行不可にする。
+                    var unreachableRoute = _route.GetRange(i, _route.Count - i);
+                    var urMax = _route.Max(el => _costMap[el.x, el.y]);
+                    _costMap[goal.x, goal.y] = urMax;
+                }
                 Blocked();
                 break;
             }
@@ -283,17 +306,7 @@ public class CharacterAI : MonoBehaviour
             if (_target)
             {
                 //射程内のターゲットに対してアクション
-                if (
-                    _character.pos == _target.pos
-                    ||
-                    _character.GetNormalizePosition(1, 0) == _target.pos
-                    ||
-                    _character.GetNormalizePosition(0, 1) == _target.pos
-                    ||
-                    _character.GetNormalizePosition(-1, 0) == _target.pos
-                    ||
-                    _character.GetNormalizePosition(0, -1) == _target.pos
-                )
+                if (_character.pos == _target.pos)
                 {
                     Action(_target);
                     _state = eState.Search;
@@ -323,6 +336,7 @@ public class CharacterAI : MonoBehaviour
                     break;
                 }
             }
+            i++;
         }
 
         yield return new WaitForSeconds(0.01f);
@@ -351,6 +365,7 @@ public class CharacterAI : MonoBehaviour
     public void Blocked()
     {
         _target = null;
+        _route.Clear();
         _state = eState.Search;
     }
 }

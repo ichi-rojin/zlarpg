@@ -100,7 +100,8 @@ public class MapManager : MonoBehaviour
                         mapTip = Instantiate(_sectionLinePrefab, pos, Quaternion.Euler(0, 0, 0f), _mapBlocks);
                         break;
                 }
-                mapTip.GetComponent<Map>().SetPos(new Vector2Int(x, y));
+                var map = mapTip.GetComponent<Map>();
+                map.SetPos(new Vector2Int(x, y));
                 _mapTips[x, y] = mapTip;
             }
         }
