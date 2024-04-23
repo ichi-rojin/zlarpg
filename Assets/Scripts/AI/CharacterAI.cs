@@ -175,13 +175,13 @@ public class CharacterAI : MonoBehaviour
 
         if (_character.orientation == Character.eOrientation.East)
         {
-            _sensed = GetPerceptionCoords(1, 1, false);
+            _sensed = GetPerceptionCoords(1, 1, true);
             senseNext1 = _character.GetNormalizePosition(0, -1);
             senseNext2 = _character.GetNormalizePosition(0, 1);
         }
         if (_character.orientation == Character.eOrientation.West)
         {
-            _sensed = GetPerceptionCoords(-1, -1, false);
+            _sensed = GetPerceptionCoords(-1, -1, true);
             senseNext1 = _character.GetNormalizePosition(0, -1);
             senseNext2 = _character.GetNormalizePosition(0, 1);
         }
@@ -193,7 +193,7 @@ public class CharacterAI : MonoBehaviour
         }
         if (_character.orientation == Character.eOrientation.North)
         {
-            _sensed = GetPerceptionCoords(1, -1, false);
+            _sensed = GetPerceptionCoords(-1, -1, false);
             senseNext1 = _character.GetNormalizePosition(-1, 0);
             senseNext2 = _character.GetNormalizePosition(1, 0);
         }
@@ -201,6 +201,30 @@ public class CharacterAI : MonoBehaviour
         if (senseNext1 != null) _sensed.Add(senseNext1);
         if (senseNext2 != null) _sensed.Add(senseNext2);
         _sensed.Add(_character.pos);
+
+        ShowSensedArea();
+    }
+
+    private void ShowSensedArea()
+    {
+        GameObject[,] mapTips = _mapManager.mapTips;
+        for (var d1 = 0; d1 < mapTips.GetLength(0); d1++)
+        {
+            for (var d2 = 0; d2 < mapTips.GetLength(1); d2++)
+            {
+                var p = new Vector2Int(d1, d2);
+                var findedMapTip = GetMapTip(p);
+                var mapSpRdr = findedMapTip.GetComponent<SpriteRenderer>();
+                if (_sensed.Contains(p))
+                {
+                    mapSpRdr.color = new Color(0f, 255f, 255f);
+                }
+                else
+                {
+                    mapSpRdr.color = new Color(255f, 255f, 255f);
+                }
+            }
+        }
     }
 
     private Map GetMapTip(Vector2Int p)
@@ -213,7 +237,6 @@ public class CharacterAI : MonoBehaviour
 
     private void FindItems()
     {
-        CreateSenseArea();
         List<Item> items = new List<Item>();
         List<Item> findedItems = new List<Item>();
         _itemsParent.GetComponentsInChildren(items);
@@ -299,6 +322,7 @@ public class CharacterAI : MonoBehaviour
             ).SetEase(Ease.Linear);
 
             SetOrientation(_character.pos, p);
+            CreateSenseArea();
 
             _character.SetPos(p);
             yield return new WaitForSeconds(duration);
