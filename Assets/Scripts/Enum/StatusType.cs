@@ -84,19 +84,19 @@ public static partial class EnumExtend
                 break;
 
             case StatusType.Sense:
-                value = 20;
+                value = 15;
                 break;
 
             case StatusType.Strength:
-                value = 20;
+                value = 15;
                 break;
 
             case StatusType.Speed:
-                value = 20;
+                value = 15;
                 break;
 
             case StatusType.Jump:
-                value = 10;
+                value = 15;
                 break;
         }
         return value;

@@ -83,7 +83,7 @@ public class Character : Token
     public void UpHp(int hp)
     {
         int max = StatusType.Hp.GetMaxValue();
-        if (_hp + hp > max)
+        if (_hp + hp >= max)
         {
             _hp = max;
             return;
@@ -94,7 +94,7 @@ public class Character : Token
     public void UpSense(int sense)
     {
         int max = StatusType.Sense.GetMaxValue();
-        if (_sense + sense > max)
+        if (_sense + sense >= max)
         {
             _sense = max;
             return;
@@ -105,7 +105,7 @@ public class Character : Token
     public void UpStrength(int strength)
     {
         int max = StatusType.Strength.GetMaxValue();
-        if (_strength + strength > max)
+        if (_strength + strength >= max)
         {
             _strength = max;
             return;
@@ -116,7 +116,7 @@ public class Character : Token
     public void UpSpeed(int speed)
     {
         int max = StatusType.Speed.GetMaxValue();
-        if (_speed + speed > max)
+        if (_speed + speed >= max)
         {
             _speed = max;
             return;
@@ -127,7 +127,7 @@ public class Character : Token
     public void UpJump(int jump)
     {
         int max = StatusType.Jump.GetMaxValue();
-        if (_jump + jump > max)
+        if (_jump + jump >= max)
         {
             _jump = max;
             return;
