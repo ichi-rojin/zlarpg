@@ -72,7 +72,7 @@ public class CharacterAI : MonoBehaviour
                 break;
 
             case 'w':
-                return 1000;
+                return -1;//壁はマイナス値を入れて、計算対象外とする
                 break;
 
             case 's':

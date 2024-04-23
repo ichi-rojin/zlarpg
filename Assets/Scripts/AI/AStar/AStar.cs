@@ -192,6 +192,11 @@ public static class AStar
         /// 指定の座標にあるノードをオープンする.
         public ANode OpenNode(int x, int y, int cost, ANode parent)
         {
+            if (_layer[x, y] < 0)
+            {
+                //通過不可能なマップは計算しない
+                return null;
+            }
             // ノードを取得する.
             var node = GetNode(x, y);
             if (node.IsNone() == false)
