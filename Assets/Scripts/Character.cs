@@ -6,7 +6,7 @@ public class Character : Token
 {
     [SerializeField]
     [Header("Å‘åHP(‰ŠúHP)")]
-    private int _hp; //HitPoint
+    private int _hp;
 
     public int hp
     {
@@ -40,6 +40,15 @@ public class Character : Token
         get { return _speed; }
     }
 
+    [SerializeField]
+    [Header("ƒWƒƒƒ“ƒv—Í")]
+    private int _jump;
+
+    public int jump
+    {
+        get { return _jump; }
+    }
+
     // ó‘Ô.
     public enum eOrientation
     {
@@ -63,6 +72,7 @@ public class Character : Token
         _sense = StatusType.Sense.GetUpInitialValue();
         _strength = StatusType.Strength.GetUpInitialValue();
         _speed = StatusType.Speed.GetUpInitialValue();
+        _jump = StatusType.Jump.GetUpInitialValue();
     }
 
     public void SetOrientation(eOrientation orientation)
@@ -112,6 +122,17 @@ public class Character : Token
             return;
         }
         _speed += speed;
+    }
+
+    public void UpJump(int jump)
+    {
+        int max = StatusType.Jump.GetMaxValue();
+        if (_jump + jump > max)
+        {
+            _jump = max;
+            return;
+        }
+        _jump += jump;
     }
 
     public void Damage(int attack, Character aggressor)

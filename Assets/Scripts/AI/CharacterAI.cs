@@ -28,6 +28,12 @@ public class CharacterAI : MonoBehaviour
     private MapManager _mapManager;
     private char[,] _map;
     private int[,] _costMap;
+
+    public int[,] costMap
+    {
+        get { return _costMap; }
+    }
+
     private int[,] _findMap;//発見物メモリ
 
     private List<Vector2Int> _sensed = new List<Vector2Int>();
@@ -189,6 +195,14 @@ public class CharacterAI : MonoBehaviour
         _sensed.Add(_character.pos);
     }
 
+    private Map GetMapTip(Vector2Int p)
+    {
+        GameObject[,] mapTips = _mapManager.mapTips;
+        var mapTip = mapTips[p.x, p.y];
+        var map = mapTip.GetComponent<Map>();
+        return map;
+    }
+
     private void FindItems()
     {
         CreateSenseArea();
@@ -200,11 +214,11 @@ public class CharacterAI : MonoBehaviour
             if (_sensed.Contains(item.pos))
             {
                 findedItems.Add(item);
-            } else
+            }
+            else
             {
                 //視界内の発見物がすでになくなっていたら記憶から消す
                 _findMap[item.pos.x, item.pos.y] = 0;
-
             }
         }
         foreach (var find in findedItems)
@@ -244,6 +258,14 @@ public class CharacterAI : MonoBehaviour
         float duration = calcDurationBySpeed(_character.speed);
         foreach (var p in _route)
         {
+            var findedMapTip = GetMapTip(p);
+            var AdvancePermission = findedMapTip.GetAdvancePermission(_character);
+            if (AdvancePermission == false)
+            {
+                Blocked();
+                break;
+            }
+
             _transform.DOMove(
                 _mapManager.GetWorldPositionFromTile(p.x, p.y),
                 duration
@@ -319,5 +341,12 @@ public class CharacterAI : MonoBehaviour
             MethodInfo mi = t.GetMethod(provide.Key);
             object o = mi.Invoke(_character, new object[] { provide.Value });
         }
+    }
+
+    //再度思考
+    public void Blocked()
+    {
+        _target = null;
+        _state = eState.Search;
     }
 }

@@ -6,6 +6,7 @@ public enum StatusType
     Sense,
     Strength,
     Speed,
+    Jump,
 }
 
 public static partial class EnumExtend
@@ -36,6 +37,10 @@ public static partial class EnumExtend
             case StatusType.Speed:
                 value = Random.Range(0, 1 + lessI);
                 break;
+
+            case StatusType.Jump:
+                value = Random.Range(0, 1 + lessI);
+                break;
         }
         return value;
     }
@@ -61,6 +66,10 @@ public static partial class EnumExtend
             case StatusType.Speed:
                 value = Random.Range(1, 5 + lessI);
                 break;
+
+            case StatusType.Jump:
+                value = Random.Range(1, 5 + lessI);
+                break;
         }
         return value;
     }
@@ -84,6 +93,10 @@ public static partial class EnumExtend
 
             case StatusType.Speed:
                 value = 20;
+                break;
+
+            case StatusType.Jump:
+                value = 10;
                 break;
         }
         return value;

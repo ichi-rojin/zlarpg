@@ -28,6 +28,14 @@ public class MapManager : MonoBehaviour
         get { return _map; }
     }
 
+    private GameObject[,] _mapTips; //マップチップ格納
+
+    // プロパティ
+    public GameObject[,] mapTips
+    {
+        get { return _mapTips; }
+    }
+
     private int
         _rowLength,
         _colLength
@@ -55,6 +63,8 @@ public class MapManager : MonoBehaviour
 
         // ２次元配列の定義
         _map = new char[_colLength, _rowLength];//マップ作成
+
+        _mapTips = new GameObject[_colLength, _rowLength];//マップチップ格納
         PlaceTiles();//プレファブを並べる処理
     }
 
@@ -91,6 +101,7 @@ public class MapManager : MonoBehaviour
                         break;
                 }
                 mapTip.GetComponent<Map>().SetPos(new Vector2Int(x, y));
+                _mapTips[x, y] = mapTip;
             }
         }
     }
