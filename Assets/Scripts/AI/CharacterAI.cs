@@ -145,23 +145,89 @@ public class CharacterAI : MonoBehaviour
         _route = AStar.Serch(startPos, endPos, _costMap);
     }
 
+    //éãê¸
+    private List<Vector2Int> GetSightLines(Vector2Int start, Vector2Int end, int dist, bool horizontal)
+    {
+        List<Vector2Int> SightList = new List<Vector2Int>();
+        if (horizontal)
+        {
+            if (end.y < 0)
+            {
+                return SightList;
+            }
+        }
+        else
+        {
+            if (end.x < 0)
+            {
+                return SightList;
+            }
+        }
+        int step = 1;
+        float dx = end.x - start.x;
+        float dy = end.y - start.y;
+        float t = dx != 0 ? dx / dy : 0;
+        if (horizontal)
+        {
+            t = dy != 0 ? dy / dx : 0;
+        }
+        int i = 0;
+        float nx = start.x;
+        float ny = start.y;
+        while (i < dist)
+        {
+            i += step;
+            if (horizontal)
+            {
+                nx += step * Math.Sign(dx);
+                ny += t;
+            }
+            else
+            {
+                nx += t;
+                ny += step * Math.Sign(dy);
+            }
+            int nxi = (int)Math.Round(nx);
+            int nyi = (int)Math.Round(ny);
+            Vector2Int p = _mapManager.GetNormalizePosition(new Vector2Int(nxi, nyi), 0, 0);
+            if (
+                p.x < 0
+                ||
+                p.y < 0
+                ||
+                _costMap[p.x, p.y] < 0
+            )
+            {
+                break;
+            }
+            if (SightList.Contains(p) == false)
+            {
+                SightList.Add(p);
+            }
+        }
+        return SightList;
+    }
+
+    //éãäE
     private List<Vector2Int> GetPerceptionCoords(int sign1, int sign2, bool reverse)
     {
         List<Vector2Int> senses = new List<Vector2Int>();
-        for (int p1 = 1; p1 <= _character.sense; p1++)
+        var p1 = _character.sense;
+        for (int p2 = -1 * p1; p2 < (p1 - 1) + 2; p2++)
         {
-            for (int p2 = -1 * p1; p2 < (p1 - 1) + 2; p2++)
+            Vector2Int coord = new Vector2Int();
+            if (reverse != false)
             {
-                Vector2Int coord = new Vector2Int();
-                if (reverse != false)
-                {
-                    coord = _character.GetNormalizePosition(p1 * sign1, p2 * sign2);
-                }
-                else
-                {
-                    coord = _character.GetNormalizePosition(p2 * sign2, p1 * sign1);
-                }
-                if (coord != null) senses.Add(coord);
+                coord = _mapManager.GetNormalizePosition(_character.pos, p1 * sign1, p2 * sign2);
+            }
+            else
+            {
+                coord = _mapManager.GetNormalizePosition(_character.pos, p2 * sign2, p1 * sign1);
+            }
+
+            foreach (var sightCell in GetSightLines(_character.pos, coord, _character.sense, reverse))
+            {
+                senses.Add(sightCell);
             }
         }
         return senses;
@@ -176,30 +242,30 @@ public class CharacterAI : MonoBehaviour
         if (_character.orientation == Character.eOrientation.East)
         {
             _sensed = GetPerceptionCoords(1, 1, true);
-            senseNext1 = _character.GetNormalizePosition(0, -1);
-            senseNext2 = _character.GetNormalizePosition(0, 1);
+            senseNext1 = _mapManager.GetNormalizePosition(_character.pos, 0, -1);
+            senseNext2 = _mapManager.GetNormalizePosition(_character.pos, 0, 1);
         }
         if (_character.orientation == Character.eOrientation.West)
         {
             _sensed = GetPerceptionCoords(-1, -1, true);
-            senseNext1 = _character.GetNormalizePosition(0, -1);
-            senseNext2 = _character.GetNormalizePosition(0, 1);
+            senseNext1 = _mapManager.GetNormalizePosition(_character.pos, 0, -1);
+            senseNext2 = _mapManager.GetNormalizePosition(_character.pos, 0, 1);
         }
         if (_character.orientation == Character.eOrientation.South)
         {
             _sensed = GetPerceptionCoords(1, 1, false);
-            senseNext1 = _character.GetNormalizePosition(-1, 0);
-            senseNext2 = _character.GetNormalizePosition(1, 0);
+            senseNext1 = _mapManager.GetNormalizePosition(_character.pos, -1, 0);
+            senseNext2 = _mapManager.GetNormalizePosition(_character.pos, 1, 0);
         }
         if (_character.orientation == Character.eOrientation.North)
         {
             _sensed = GetPerceptionCoords(-1, -1, false);
-            senseNext1 = _character.GetNormalizePosition(-1, 0);
-            senseNext2 = _character.GetNormalizePosition(1, 0);
+            senseNext1 = _mapManager.GetNormalizePosition(_character.pos, -1, 0);
+            senseNext2 = _mapManager.GetNormalizePosition(_character.pos, 1, 0);
         }
         //é¸àÕÇímäoîÕàÕÇ…ä‹ÇﬂÇÈ
-        if (senseNext1 != null) _sensed.Add(senseNext1);
-        if (senseNext2 != null) _sensed.Add(senseNext2);
+        if (_costMap[senseNext1.x, senseNext1.y] > 0) _sensed.Add(senseNext1);
+        if (_costMap[senseNext2.x, senseNext2.y] > 0) _sensed.Add(senseNext2);
         _sensed.Add(_character.pos);
 
         ShowSensedArea();

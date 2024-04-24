@@ -143,4 +143,25 @@ public class MapManager : MonoBehaviour
 
         return new Vector2Int(value.X, value.Y);
     }
+
+    public Vector2Int GetNormalizePosition(Vector2Int cur, int addX, int addY)
+    {
+        var current = new Vector2Int(cur.x, cur.y);
+        current.x += addX;
+        current.y += addY;
+
+        var w = _map.GetLength(0);
+        var h = _map.GetLength(1);
+
+        if (0 > current.x || current.x >= w)
+        {
+            current.x = -1;
+        }
+
+        if (0 > current.y || current.y >= h)
+        {
+            current.y = -1;
+        }
+        return current;
+    }
 }
