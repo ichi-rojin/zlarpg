@@ -18,13 +18,13 @@ public class CharacterAI : MonoBehaviour
 
     private eState _state = eState.Search;
 
-    private Character _character; //座標
-    private Transform _transform; //座標
+    private Character _character;
+    private Transform _transform;
 
     private List<Vector2Int> _route;
 
     private GameObject _managers;
-    private GameObject _itemsParent; //マップのゲームオブジェクト
+    private GameObject _itemsParent;//アイテムの親ゲームオブジェクト
     private MapManager _mapManager;
     private char[,] _map;
     private int[,] _costMap;
@@ -69,15 +69,12 @@ public class CharacterAI : MonoBehaviour
         {
             case 'g':
                 return 1;
-                break;
 
             case 'w':
                 return -1;//壁はマイナス値を入れて、計算対象外とする
-                break;
 
             case 's':
                 return 5;
-                break;
         }
         return 0;
     }
