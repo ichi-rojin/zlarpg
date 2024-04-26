@@ -37,6 +37,10 @@ public class CharacterAI : MonoBehaviour
     private int[,] _findMap;//î≠å©ï®ÉÅÉÇÉä
 
     private List<Vector2Int> _sensed = new List<Vector2Int>();
+    public List<Vector2Int> sensed
+    {
+        get { return _sensed; }
+    }
 
     private Item _target = null;
 
@@ -270,38 +274,6 @@ public class CharacterAI : MonoBehaviour
         if (_costMap[senseNext1.x, senseNext1.y] > 0) _sensed.Add(senseNext1);
         if (_costMap[senseNext2.x, senseNext2.y] > 0) _sensed.Add(senseNext2);
         _sensed.Add(_character.pos);
-
-        ShowSensedArea();
-    }
-
-    private void ShowSensedArea()
-    {
-        GameObject[,] mapTips = _mapManager.mapTips;
-        for (var d1 = 0; d1 < mapTips.GetLength(0); d1++)
-        {
-            for (var d2 = 0; d2 < mapTips.GetLength(1); d2++)
-            {
-                var p = new Vector2Int(d1, d2);
-                var findedMapTip = GetMapTip(p);
-                var mapSpRdr = findedMapTip.GetComponent<SpriteRenderer>();
-                if (_sensed.Contains(p))
-                {
-                    mapSpRdr.color = new Color(0f, 255f, 255f);
-                }
-                else
-                {
-                    mapSpRdr.color = new Color(255f, 255f, 255f);
-                }
-            }
-        }
-    }
-
-    private Map GetMapTip(Vector2Int p)
-    {
-        GameObject[,] mapTips = _mapManager.mapTips;
-        var mapTip = mapTips[p.x, p.y];
-        var map = mapTip.GetComponent<Map>();
-        return map;
     }
 
     private void FindItems()
@@ -372,7 +344,7 @@ public class CharacterAI : MonoBehaviour
             SetOrientation(_character.pos, p);
             CreateSenseArea();
 
-            var findedMapTip = GetMapTip(p);
+            var findedMapTip = _mapManager.GetMapTip(p);
             var AdvancePermission = findedMapTip.GetAdvancePermission(_character);
             if (AdvancePermission == false)
             {

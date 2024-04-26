@@ -164,4 +164,11 @@ public class MapManager : MonoBehaviour
         }
         return current;
     }
+
+    public Map GetMapTip(Vector2Int p)
+    {
+        var mapTip = mapTips[p.x, p.y];
+        var map = mapTip.GetComponent<Map>();
+        return map;
+    }
 }
