@@ -215,11 +215,17 @@ public class CharacterAI : MonoBehaviour
             Vector2Int coord = new Vector2Int();
             if (reverse != false)
             {
-                coord = _mapManager.GetNormalizePosition(_character.pos, p1 * sign1, p2 * sign2);
+                coord = new Vector2Int(
+                    _character.pos.x + p1 * sign1,
+                    _character.pos.y + p2 * sign2
+                );
             }
             else
             {
-                coord = _mapManager.GetNormalizePosition(_character.pos, p2 * sign2, p1 * sign1);
+                coord = new Vector2Int(
+                    _character.pos.x + p2 * sign2
+                    , _character.pos.y + p1 * sign1
+                );
             }
 
             foreach (var sightCell in GetSightLines(_character.pos, coord, _character.sense, reverse))
