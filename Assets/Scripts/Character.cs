@@ -65,9 +65,13 @@ public class Character : Token
         get { return _orientation; }
     }
 
+    Animator animator;
+
     // Start is called before the first frame update
     private void Start()
     {
+        animator = GetComponent<Animator>();
+
         _hp = StatusType.Hp.GetUpInitialValue();
         _sense = StatusType.Sense.GetUpInitialValue();
         _strength = StatusType.Strength.GetUpInitialValue();
@@ -77,7 +81,30 @@ public class Character : Token
 
     public void SetOrientation(eOrientation orientation)
     {
+        if (_orientation == orientation) return;
         _orientation = orientation;
+        switch (_orientation)
+        {
+            case eOrientation.East:
+                animator.SetTrigger("isRight");
+                break;
+
+            case eOrientation.West:
+                animator.SetTrigger("isLeft");
+                break;
+
+            case eOrientation.South:
+                animator.SetTrigger("isDown");
+                break;
+
+            case eOrientation.North:
+                animator.SetTrigger("isUp");
+                break;
+            default:
+                animator.SetTrigger("isUp");
+                break;
+        }
+
     }
 
     public void UpHp(int hp)

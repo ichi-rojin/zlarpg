@@ -363,6 +363,9 @@ public class CharacterAI : MonoBehaviour
         var i = 0;
         foreach (var p in _route)
         {
+            SetOrientation(_character.pos, p);
+            CreateSenseArea();
+
             var findedMapTip = GetMapTip(p);
             var AdvancePermission = findedMapTip.GetAdvancePermission(_character);
             if (AdvancePermission == false)
@@ -383,9 +386,6 @@ public class CharacterAI : MonoBehaviour
                 _mapManager.GetWorldPositionFromTile(p.x, p.y),
                 duration
             ).SetEase(Ease.Linear);
-
-            SetOrientation(_character.pos, p);
-            CreateSenseArea();
 
             _character.SetPos(p);
             yield return new WaitForSeconds(duration);
