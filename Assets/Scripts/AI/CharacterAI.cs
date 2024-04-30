@@ -37,6 +37,7 @@ public class CharacterAI : MonoBehaviour
     private int[,] _findMap;//発見物メモリ
 
     private List<Vector2Int> _sensed = new List<Vector2Int>();
+
     public List<Vector2Int> sensed
     {
         get { return _sensed; }
@@ -57,7 +58,7 @@ public class CharacterAI : MonoBehaviour
         _costMap = new int[_map.GetLength(0), _map.GetLength(1)];
         _findMap = new int[_map.GetLength(0), _map.GetLength(1)];
 
-        makeCostMap();
+        MakeCostMap();
 
         yield return new WaitForSeconds(0.1f);
 
@@ -67,7 +68,7 @@ public class CharacterAI : MonoBehaviour
         StartCoroutine("Move");
     }
 
-    private int getMapTipCost(char mapType)
+    private int GetMapTipCost(char mapType)
     {
         switch (mapType)
         {
@@ -83,13 +84,13 @@ public class CharacterAI : MonoBehaviour
         return 0;
     }
 
-    private void makeCostMap()
+    private void MakeCostMap()
     {
         for (int i = 0, size_i = _map.GetLength(0); i < size_i; i++)
         {
             for (int j = 0, size_j = _map.GetLength(1); j < size_j; j++)
             {
-                _costMap[i, j] = getMapTipCost(_map[i, j]);
+                _costMap[i, j] = GetMapTipCost(_map[i, j]);
             }
         }
     }
@@ -305,7 +306,7 @@ public class CharacterAI : MonoBehaviour
         List<Vector2Int> findedList = new List<Vector2Int>();
         List<Item> findedItems = new List<Item>();
         _itemsParent.GetComponentsInChildren(items);
-        var findItems = _findMap.GetCoordByValue(1);
+        var findItems = _findMap.GetCoordListByValue(1);
         foreach (var item in findItems)
         {
             findedList.Add(new Vector2Int(item.X, item.Y));
@@ -320,7 +321,7 @@ public class CharacterAI : MonoBehaviour
             else
             {
                 //コストが踏破力以下のときはマップコストを初期化する
-                _costMap[item.pos.x, item.pos.y] = getMapTipCost(_map[item.pos.x, item.pos.y]);
+                _costMap[item.pos.x, item.pos.y] = GetMapTipCost(_map[item.pos.x, item.pos.y]);
             }
             if (findedList.Contains(item.pos))
             {
@@ -330,14 +331,14 @@ public class CharacterAI : MonoBehaviour
         return findedItems;
     }
 
-    private float calcDurationBySpeed(int speed)
+    private float CalcDurationBySpeed(int speed)
     {
         return _mapManager.tileSize / 100 / 4 * (3.0f - (float)speed / 10);
     }
 
     private IEnumerator Move()
     {
-        float duration = calcDurationBySpeed(_character.speed);
+        float duration = CalcDurationBySpeed(_character.speed);
         var i = 0;
         foreach (var p in _route)
         {

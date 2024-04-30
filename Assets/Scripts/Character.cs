@@ -1,9 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Character : Token
 {
+    [SerializeField]
+    [Header("ユニークID")]
+    private string _id;
+
     [SerializeField]
     [Header("最大HP(初期HP)")]
     private int _hp;
@@ -65,7 +70,14 @@ public class Character : Token
         get { return _orientation; }
     }
 
-    Animator animator;
+    private Animator animator;
+
+    private void Awake()
+    {
+        //インスタンス生成時にuuidを設定する
+        Guid guid = Guid.NewGuid();
+        _id = guid.ToString();
+    }
 
     // Start is called before the first frame update
     private void Start()
@@ -100,66 +112,41 @@ public class Character : Token
             case eOrientation.North:
                 animator.SetTrigger("isUp");
                 break;
+
             default:
                 animator.SetTrigger("isUp");
                 break;
         }
-
     }
 
     public void UpHp(int hp)
     {
         int max = StatusType.Hp.GetMaxValue();
-        if (_hp + hp >= max)
-        {
-            _hp = max;
-            return;
-        }
-        _hp += hp;
+        _hp = Math.Clamp(_hp + hp, _hp, max);
     }
 
     public void UpSense(int sense)
     {
         int max = StatusType.Sense.GetMaxValue();
-        if (_sense + sense >= max)
-        {
-            _sense = max;
-            return;
-        }
-        _sense += sense;
+        _sense = Math.Clamp(_sense + sense, _sense, max);
     }
 
     public void UpStrength(int strength)
     {
         int max = StatusType.Strength.GetMaxValue();
-        if (_strength + strength >= max)
-        {
-            _strength = max;
-            return;
-        }
-        _strength += strength;
+        _strength = Math.Clamp(_strength + strength, _strength, max);
     }
 
     public void UpSpeed(int speed)
     {
         int max = StatusType.Speed.GetMaxValue();
-        if (_speed + speed >= max)
-        {
-            _speed = max;
-            return;
-        }
-        _speed += speed;
+        _speed = Math.Clamp(_speed + speed, _speed, max);
     }
 
     public void UpJump(int jump)
     {
         int max = StatusType.Jump.GetMaxValue();
-        if (_jump + jump >= max)
-        {
-            _jump = max;
-            return;
-        }
-        _jump += jump;
+        _jump = Math.Clamp(_jump + jump, _jump, max);
     }
 
     public void Damage(int attack, Character aggressor)

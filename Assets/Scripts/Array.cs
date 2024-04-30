@@ -36,7 +36,7 @@ internal static class ArrayExtensions
         }
     }
 
-    public static IEnumerable<SearchResult> GetCoordByValue<T>(this T[,] source, T value)
+    public static IEnumerable<SearchResult> GetCoordListByValue<T>(this T[,] source, T value)
     {
         var length = source.GetLength(1);
         var result = source.Cast<T>()//1ŽŸŒ³”z—ñ‚É–ß‚·
