@@ -338,6 +338,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _treasureChestPrefab: {fileID: 2089038219250729426, guid: a5446bf72722d0f4992c22271ac09a32, type: 3}
   _itemsParent: {fileID: 128910528}
+  _charactersParent: {fileID: 1184960657}
 --- !u!1 &787370234
 GameObject:
   m_ObjectHideFlags: 0
