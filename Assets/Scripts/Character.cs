@@ -4,57 +4,12 @@ using UnityEngine;
 public class Character : Token
 {
     [SerializeField]
-    [Header("最大HP(初期HP)")]
-    private int _maxHp;
+    [Header("ステータス")]
+    private CharacterStats _stats;
 
-    public int maxHp
+    public CharacterStats stats
     {
-        get { return _maxHp; }
-    }
-
-    [SerializeField]
-    [Header("現在HP")]
-    private int _hp;
-
-    public int hp
-    {
-        get { return _hp; }
-    }
-
-    [SerializeField]
-    [Header("知覚能力")]
-    private int _sense;
-
-    public int sense
-    {
-        get { return _sense; }
-    }
-
-    [SerializeField]
-    [Header("力の強さ")]
-    private int _strength;
-
-    public int strength
-    {
-        get { return _strength; }
-    }
-
-    [SerializeField]
-    [Header("徒歩スピード")]
-    private int _speed;
-
-    public int speed
-    {
-        get { return _speed; }
-    }
-
-    [SerializeField]
-    [Header("ジャンプ力")]
-    private int _jump;
-
-    public int jump
-    {
-        get { return _jump; }
+        get { return _stats; }
     }
 
     // 状態.
@@ -66,6 +21,8 @@ public class Character : Token
         North,
     }
 
+    [SerializeField]
+    [Header("体の向き")]
     private eOrientation _orientation = eOrientation.South;
 
     public eOrientation orientation
@@ -80,13 +37,7 @@ public class Character : Token
     public void Init(CharacterStats stats)
     {
         _animator = GetComponent<Animator>();
-
-        _maxHp = StatsType.MaxHp.GetUpInitialValue(stats);
-        _hp = _maxHp;
-        _sense = StatsType.Sense.GetUpInitialValue(stats);
-        _strength = StatsType.Strength.GetUpInitialValue(stats);
-        _speed = StatsType.Speed.GetUpInitialValue(stats);
-        _jump = StatsType.Jump.GetUpInitialValue(stats);
+        _stats = stats;
     }
 
     public void SetOrientation(eOrientation orientation)
@@ -120,44 +71,44 @@ public class Character : Token
     public void UpHp(int hp)
     {
         int max = StatsType.MaxHp.GetMaxValue();
-        _hp = Math.Clamp(_hp + hp, _hp, max);
+        _stats[StatsType.Hp] = Math.Clamp(_stats[StatsType.Hp] + hp, _stats[StatsType.Hp], max);
     }
 
     public void UpMaxHp(int maxHp)
     {
         int max = StatsType.MaxHp.GetMaxValue();
-        _maxHp = Math.Clamp(_maxHp + maxHp, _maxHp, max);
-        if (_hp > _maxHp) _hp = _maxHp;
+        _stats[StatsType.MaxHp] = Math.Clamp(_stats[StatsType.MaxHp] + maxHp, _stats[StatsType.MaxHp], max);
+        if (_stats[StatsType.Hp] > _stats[StatsType.MaxHp]) _stats[StatsType.Hp] = _stats[StatsType.MaxHp];
     }
 
     public void UpSense(int sense)
     {
         int max = StatsType.Sense.GetMaxValue();
-        _sense = Math.Clamp(_sense + sense, _sense, max);
+        _stats[StatsType.Sense] = Math.Clamp(_stats[StatsType.Sense] + sense, _stats[StatsType.Sense], max);
     }
 
     public void UpStrength(int strength)
     {
         int max = StatsType.Strength.GetMaxValue();
-        _strength = Math.Clamp(_strength + strength, _strength, max);
+        _stats[StatsType.Strength] = Math.Clamp(_stats[StatsType.Strength] + strength, _stats[StatsType.Strength], max);
     }
 
     public void UpSpeed(int speed)
     {
         int max = StatsType.Speed.GetMaxValue();
-        _speed = Math.Clamp(_speed + speed, _speed, max);
+        _stats[StatsType.Speed] = Math.Clamp(_stats[StatsType.Speed] + speed, _stats[StatsType.Speed], max);
     }
 
     public void UpJump(int jump)
     {
         int max = StatsType.Jump.GetMaxValue();
-        _jump = Math.Clamp(_jump + jump, _jump, max);
+        _stats[StatsType.Jump] = Math.Clamp(_stats[StatsType.Jump] + jump, _stats[StatsType.Jump], max);
     }
 
     public void Damage(int attack, Character aggressor)
     {
-        _hp -= attack;
-        if (_hp <= 0)
+        _stats[StatsType.Hp] -= attack;
+        if (_stats[StatsType.Hp] <= 0)
         {
             Vanish();
         }

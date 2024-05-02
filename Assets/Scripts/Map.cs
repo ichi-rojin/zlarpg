@@ -19,7 +19,7 @@ public class Map : Token
         var charaAI = character.GetComponent<CharacterAI>();
         var costMap = charaAI.costMap;
         var cost = costMap[pos.x, pos.y];
-        if (cost <= character.jump) return true;
+        if (cost <= character.stats[StatsType.Jump]) return true;
         return false;
     }
 }

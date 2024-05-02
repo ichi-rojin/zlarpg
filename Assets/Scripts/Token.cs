@@ -9,6 +9,7 @@ public class Token : MonoBehaviour
 
     // ˆÊ’u
     [SerializeField]
+    [Header("ˆÊ’uî•ñ")]
     private Vector2Int _pos;
 
     public Vector2Int pos

@@ -47,35 +47,6 @@ public static partial class EnumExtend
         return value;
     }
 
-    public static int GetUpInitialValue(this StatsType param, CharacterStats stats)
-    {
-        int value = new int();
-        int lessI = 1;//intŒ^‚ÌRandom.Range‚Ímax‚ðŠÜ‚Ü‚È‚¢‚½‚ß
-        switch (param)
-        {
-            case StatsType.MaxHp:
-                value = Random.Range(stats.Hp, 300 + lessI);
-                break;
-
-            case StatsType.Sense:
-                value = Random.Range(stats.Sense, 10 + lessI);
-                break;
-
-            case StatsType.Strength:
-                value = Random.Range(stats.Strength, 10 + lessI);
-                break;
-
-            case StatsType.Speed:
-                value = Random.Range(stats.Speed, 5 + lessI);
-                break;
-
-            case StatsType.Jump:
-                value = Random.Range(stats.Jump, 5 + lessI);
-                break;
-        }
-        return value;
-    }
-
     public static int GetMaxValue(this StatsType param)
     {
         int value = new int();
@@ -94,11 +65,11 @@ public static partial class EnumExtend
                 break;
 
             case StatsType.Speed:
-                value = 15;
+                value = 20;
                 break;
 
             case StatsType.Jump:
-                value = 15;
+                value = 10;
                 break;
         }
         return value;

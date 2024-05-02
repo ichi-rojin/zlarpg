@@ -214,7 +214,7 @@ public class CharacterAI : MonoBehaviour
     private List<Vector2Int> GetPerceptionCoords(int sign1, int sign2, bool reverse)
     {
         List<Vector2Int> senses = new List<Vector2Int>();
-        var p1 = _character.sense;
+        var p1 = _character.stats[StatsType.Sense];
         for (int p2 = -1 * p1; p2 < (p1 - 1) + 2; p2++)
         {
             Vector2Int coord = new Vector2Int();
@@ -233,7 +233,7 @@ public class CharacterAI : MonoBehaviour
                 );
             }
 
-            foreach (var sightCell in GetSightLines(_character.pos, coord, _character.sense, reverse))
+            foreach (var sightCell in GetSightLines(_character.pos, coord, p1, reverse))
             {
                 senses.Add(sightCell);
             }
@@ -313,7 +313,7 @@ public class CharacterAI : MonoBehaviour
         }
         foreach (var item in items)
         {
-            if (_costMap[item.pos.x, item.pos.y] > _character.jump)
+            if (_costMap[item.pos.x, item.pos.y] > _character.stats[StatsType.Jump])
             {
                 //ƒRƒXƒg‚ª“¥”j—Í‚ğã‰ñ‚ê‚Î–³‹‚·‚é
                 continue;
@@ -338,7 +338,7 @@ public class CharacterAI : MonoBehaviour
 
     private IEnumerator Move()
     {
-        float duration = CalcDurationBySpeed(_character.speed);
+        float duration = CalcDurationBySpeed(_character.stats[StatsType.Speed]);
         var i = 0;
         foreach (var p in _route)
         {
