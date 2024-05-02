@@ -24,7 +24,7 @@ public static partial class EnumExtend
         int lessI = 1;//intŒ^‚ÌRandom.Range‚Ímax‚ðŠÜ‚Ü‚È‚¢‚½‚ß
         switch (param)
         {
-            case StatsType.Hp:
+            case StatsType.MaxHp:
                 value = Random.Range(0, 10 + lessI);
                 break;
 
@@ -53,7 +53,7 @@ public static partial class EnumExtend
         int lessI = 1;//intŒ^‚ÌRandom.Range‚Ímax‚ðŠÜ‚Ü‚È‚¢‚½‚ß
         switch (param)
         {
-            case StatsType.Hp:
+            case StatsType.MaxHp:
                 value = Random.Range(stats.Hp, 300 + lessI);
                 break;
 
@@ -81,7 +81,7 @@ public static partial class EnumExtend
         int value = new int();
         switch (param)
         {
-            case StatsType.Hp:
+            case StatsType.MaxHp:
                 value = 1000;
                 break;
 

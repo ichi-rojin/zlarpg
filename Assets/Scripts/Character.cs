@@ -5,6 +5,15 @@ public class Character : Token
 {
     [SerializeField]
     [Header("Å‘åHP(‰ŠúHP)")]
+    private int _maxHp;
+
+    public int maxHp
+    {
+        get { return _maxHp; }
+    }
+
+    [SerializeField]
+    [Header("Œ»İHP")]
     private int _hp;
 
     public int hp
@@ -72,7 +81,8 @@ public class Character : Token
     {
         _animator = GetComponent<Animator>();
 
-        _hp = StatsType.Hp.GetUpInitialValue(stats);
+        _maxHp = StatsType.MaxHp.GetUpInitialValue(stats);
+        _hp = _maxHp;
         _sense = StatsType.Sense.GetUpInitialValue(stats);
         _strength = StatsType.Strength.GetUpInitialValue(stats);
         _speed = StatsType.Speed.GetUpInitialValue(stats);
@@ -109,8 +119,15 @@ public class Character : Token
 
     public void UpHp(int hp)
     {
-        int max = StatsType.Hp.GetMaxValue();
+        int max = StatsType.MaxHp.GetMaxValue();
         _hp = Math.Clamp(_hp + hp, _hp, max);
+    }
+
+    public void UpMaxHp(int maxHp)
+    {
+        int max = StatsType.MaxHp.GetMaxValue();
+        _maxHp = Math.Clamp(_maxHp + maxHp, _maxHp, max);
+        if (_hp > _maxHp) _hp = _maxHp;
     }
 
     public void UpSense(int sense)
