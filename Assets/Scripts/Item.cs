@@ -5,12 +5,12 @@ using System.Linq;
 
 public class Item : Token
 {
-    private StatusType _status;
+    private StatsType _status;
 
     // Start is called before the first frame update
     private void Start()
     {
-        _status = new List<StatusType>().GetRandomByEnum();
+        _status = new List<StatsType>().GetRandomByEnum();
     }
 
     public Dictionary<string, int> Provide()

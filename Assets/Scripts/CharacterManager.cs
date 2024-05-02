@@ -23,14 +23,10 @@ public class CharacterManager : MonoBehaviour
         {
             Vector2Int coord = _mapManager.GetRandomCoord();
             Vector2 pos = _mapManager.GetWorldPositionFromTile(coord.x, coord.y); // Šî“_‚ÌÀ•W‚ğŒ³‚É•Ï”pos‚ğéŒ¾
-            GameObject charaGameObject = Instantiate(_characterPrefab, pos, Quaternion.Euler(0, 0, 0f), _parent);
+            int characterId = 0;
+            GameObject charaGameObject = CharacterSettings.Instance.CreateCharacter(characterId, pos, _parent);
             Character character = charaGameObject.GetComponent<Character>();
             character.SetPos(new Vector2Int(coord.x, coord.y));
         }
-    }
-
-    // Update is called once per frame
-    private void Update()
-    {
     }
 }
