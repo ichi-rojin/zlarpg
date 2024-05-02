@@ -7,7 +7,7 @@ public class Character : Token
 {
     [SerializeField]
     [Header("ユニークID")]
-    private string _id;
+    private string _uuid;
 
     [SerializeField]
     [Header("最大HP(初期HP)")]
@@ -76,7 +76,7 @@ public class Character : Token
     {
         //インスタンス生成時にuuidを設定する
         Guid guid = Guid.NewGuid();
-        _id = guid.ToString();
+        _uuid = guid.ToString();
     }
 
     // Start is called before the first frame update

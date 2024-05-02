@@ -28,9 +28,4 @@ public class CharacterManager : MonoBehaviour
             character.SetPos(new Vector2Int(coord.x, coord.y));
         }
     }
-
-    // Update is called once per frame
-    private void Update()
-    {
-    }
 }

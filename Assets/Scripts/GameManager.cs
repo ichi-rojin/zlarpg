@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviour
         _charactersParent.GetComponentsInChildren(charas);
         foreach (var chara in charas)
         {
-            foreach(var p in chara.GetComponent<CharacterAI>().sensed)
+            foreach (var p in chara.GetComponent<CharacterAI>().sensed)
             {
                 senses.Add(p);
             }
