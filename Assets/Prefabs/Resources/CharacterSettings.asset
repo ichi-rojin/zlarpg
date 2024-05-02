@@ -24,4 +24,4 @@ MonoBehaviour:
     Strength: 3
     Speed: 3
     Jump: 2
-    Prefabs: {fileID: 1883682531497913629, guid: 8e2cf664ca75049488f68303f03acf64, type: 3}
+    Prefab: {fileID: 1883682531497913629, guid: 8e2cf664ca75049488f68303f03acf64, type: 3}

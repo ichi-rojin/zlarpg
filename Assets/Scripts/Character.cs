@@ -1,14 +1,8 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Character : Token
 {
-    [SerializeField]
-    [Header("ユニークID")]
-    private string _uuid;
-
     [SerializeField]
     [Header("最大HP(初期HP)")]
     private int _hp;
@@ -70,25 +64,19 @@ public class Character : Token
         get { return _orientation; }
     }
 
-    private Animator animator;
-
-    private void Awake()
-    {
-        //インスタンス生成時にuuidを設定する
-        Guid guid = Guid.NewGuid();
-        _uuid = guid.ToString();
-    }
+    private Animator _animator;
 
     // Start is called before the first frame update
-    private void Start()
-    {
-        animator = GetComponent<Animator>();
 
-        _hp = StatusType.Hp.GetUpInitialValue();
-        _sense = StatusType.Sense.GetUpInitialValue();
-        _strength = StatusType.Strength.GetUpInitialValue();
-        _speed = StatusType.Speed.GetUpInitialValue();
-        _jump = StatusType.Jump.GetUpInitialValue();
+    public void Init(CharacterStats stats)
+    {
+        _animator = GetComponent<Animator>();
+
+        _hp = StatusType.Hp.GetUpInitialValue(stats);
+        _sense = StatusType.Sense.GetUpInitialValue(stats);
+        _strength = StatusType.Strength.GetUpInitialValue(stats);
+        _speed = StatusType.Speed.GetUpInitialValue(stats);
+        _jump = StatusType.Jump.GetUpInitialValue(stats);
     }
 
     public void SetOrientation(eOrientation orientation)
@@ -98,23 +86,23 @@ public class Character : Token
         switch (_orientation)
         {
             case eOrientation.East:
-                animator.SetTrigger("isRight");
+                _animator.SetTrigger("isRight");
                 break;
 
             case eOrientation.West:
-                animator.SetTrigger("isLeft");
+                _animator.SetTrigger("isLeft");
                 break;
 
             case eOrientation.South:
-                animator.SetTrigger("isDown");
+                _animator.SetTrigger("isDown");
                 break;
 
             case eOrientation.North:
-                animator.SetTrigger("isUp");
+                _animator.SetTrigger("isUp");
                 break;
 
             default:
-                animator.SetTrigger("isUp");
+                _animator.SetTrigger("isUp");
                 break;
         }
     }

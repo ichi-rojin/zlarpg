@@ -26,10 +26,21 @@ public class CharacterSettings : ScriptableObject
     {
         return (CharacterStats)datas.Find(item => item.Id == id).GetCopy();
     }
+
+    // キャラ生成
+    public GameObject CreateCharacter(int id, Vector2 pos, Transform parent)
+    {
+        // ステータス取得
+        CharacterStats stats = Instance.Get(id);
+        GameObject charaGameObject = Instantiate(stats.Prefab, pos, Quaternion.Euler(0, 0, 0f), parent);
+        Character character = charaGameObject.GetComponent<Character>();
+        character.Init(stats);
+        return charaGameObject;
+    }
 }
 
 [Serializable]
 public class CharacterStats : BaseStats
 {
-    public GameObject Prefabs;
+    public GameObject Prefab;
 }

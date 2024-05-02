@@ -45,30 +45,30 @@ public static partial class EnumExtend
         return value;
     }
 
-    public static int GetUpInitialValue(this StatusType param)
+    public static int GetUpInitialValue(this StatusType param, CharacterStats stats)
     {
         int value = new int();
         int lessI = 1;//intŒ^‚ÌRandom.Range‚Ímax‚ðŠÜ‚Ü‚È‚¢‚½‚ß
         switch (param)
         {
             case StatusType.Hp:
-                value = Random.Range(100, 300 + lessI);
+                value = Random.Range(stats.Hp, 300 + lessI);
                 break;
 
             case StatusType.Sense:
-                value = Random.Range(2, 10 + lessI);
+                value = Random.Range(stats.Sense, 10 + lessI);
                 break;
 
             case StatusType.Strength:
-                value = Random.Range(5, 10 + lessI);
+                value = Random.Range(stats.Strength, 10 + lessI);
                 break;
 
             case StatusType.Speed:
-                value = Random.Range(1, 5 + lessI);
+                value = Random.Range(stats.Speed, 5 + lessI);
                 break;
 
             case StatusType.Jump:
-                value = Random.Range(1, 5 + lessI);
+                value = Random.Range(stats.Jump, 5 + lessI);
                 break;
         }
         return value;
