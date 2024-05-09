@@ -7,6 +7,11 @@ public class Token : MonoBehaviour
     [Header("ユニークID")]
     private string _uuid;
 
+    public string uuid
+    {
+        get { return _uuid; }
+    }
+
     // 位置
     [SerializeField]
     [Header("位置情報")]

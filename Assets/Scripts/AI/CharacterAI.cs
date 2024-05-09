@@ -25,6 +25,7 @@ public class CharacterAI : MonoBehaviour
 
     private GameObject _managers;
     private GameObject _itemsParent;//アイテムの親ゲームオブジェクト
+    private GameObject _charasParent;//キャラクターの親ゲームオブジェクト
     private MapManager _mapManager;
     private char[,] _map;
     private int[,] _costMap;
@@ -36,12 +37,15 @@ public class CharacterAI : MonoBehaviour
 
     private int[,] _findMap;//発見物メモリ
 
-    private List<Vector2Int> _sensed = new List<Vector2Int>();
+    private List<Vector2Int> _sensed;
 
     public List<Vector2Int> sensed
     {
         get { return _sensed; }
     }
+
+    [SerializeField]
+    private List<string> _enemies;
 
     private Item _target = null;
 
@@ -51,12 +55,16 @@ public class CharacterAI : MonoBehaviour
         _managers = GameObject.Find("Managers");
         _mapManager = _managers.GetComponent<MapManager>();
         _itemsParent = GameObject.Find("ItemBlocks");
+        _charasParent = GameObject.Find("Characters");
         _character = this.gameObject.GetComponent<Character>();
         _transform = this.gameObject.transform;
 
         _map = _mapManager.map;
         _costMap = new int[_map.GetLength(0), _map.GetLength(1)];
         _findMap = new int[_map.GetLength(0), _map.GetLength(1)];
+
+        _sensed = new List<Vector2Int>();
+        _enemies = new List<string>();
 
         MakeCostMap();
 
@@ -300,6 +308,24 @@ public class CharacterAI : MonoBehaviour
         }
     }
 
+    private void FindCharas()
+    {
+        _enemies.Clear();
+        List<Character> charas = new List<Character>();
+        _charasParent.GetComponentsInChildren(charas);
+        foreach (var chara in charas)
+        {
+            if (_character == chara)
+            {
+                continue;
+            }
+            if (_sensed.Contains(chara.pos))
+            {
+                _enemies.Add(chara.GetComponent<Character>().uuid);
+            }
+        }
+    }
+
     private List<Item> GetFindItems()
     {
         List<Item> items = new List<Item>();
@@ -387,6 +413,8 @@ public class CharacterAI : MonoBehaviour
                     _state = eState.Search;
                     break;
                 }
+                //知覚エリア内のキャラクターを検索
+                FindCharas();
                 //知覚エリア内のターゲットを検索
                 FindItems();
                 var findedItems = GetFindItems();
