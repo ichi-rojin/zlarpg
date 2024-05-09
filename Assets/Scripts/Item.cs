@@ -13,10 +13,10 @@ public class Item : Token
         _status = new List<StatsType>().GetRandomByEnum();
     }
 
-    public Dictionary<string, int> Provide()
+    public Dictionary<StatsType, int> Provide()
     {
-        var provide = new Dictionary<string, int>();
-        provide.Add(_status.GetUpMethod(), _status.GetUpRandomValue());
+        var provide = new Dictionary<StatsType, int>();
+        provide.Add(_status, _status.GetUpRandomValue());
         return provide;
     }
 }

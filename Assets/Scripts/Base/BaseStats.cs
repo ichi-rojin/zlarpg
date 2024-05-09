@@ -13,11 +13,6 @@ public enum StatsType
 
 public static partial class EnumExtend
 {
-    public static string GetUpMethod(this StatsType param)
-    {
-        return "Up" + param;
-    }
-
     public static int GetUpRandomValue(this StatsType param)
     {
         int value = new int();
@@ -42,6 +37,35 @@ public static partial class EnumExtend
 
             case StatsType.Jump:
                 value = Random.Range(0, 1 + lessI);
+                break;
+        }
+        return value;
+    }
+
+    public static int GetInitialBonus(this StatsType param)
+    {
+        int value = new int();
+        int lessI = 1;//intŒ^‚ÌRandom.Range‚Ímax‚ðŠÜ‚Ü‚È‚¢‚½‚ß
+        switch (param)
+        {
+            case StatsType.MaxHp:
+                value = Random.Range(0, 200 + lessI);
+                break;
+
+            case StatsType.Sense:
+                value = Random.Range(0, 3 + lessI);
+                break;
+
+            case StatsType.Strength:
+                value = Random.Range(0, 3 + lessI);
+                break;
+
+            case StatsType.Speed:
+                value = Random.Range(0, 3 + lessI);
+                break;
+
+            case StatsType.Jump:
+                value = Random.Range(0, 3 + lessI);
                 break;
         }
         return value;
@@ -156,5 +180,10 @@ public class BaseStats
     public BaseStats GetCopy()
     {
         return (BaseStats)MemberwiseClone();
+    }
+
+    public void UpValue(StatsType type, int value)
+    {
+        this[type] += value;
     }
 }

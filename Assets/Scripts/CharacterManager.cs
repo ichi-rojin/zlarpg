@@ -26,6 +26,14 @@ public class CharacterManager : MonoBehaviour
             int characterId = 0;
             GameObject charaGameObject = CharacterSettings.Instance.CreateCharacter(characterId, pos, _parent);
             Character character = charaGameObject.GetComponent<Character>();
+
+            character.stats.UpValue(StatsType.MaxHp, StatsType.MaxHp.GetInitialBonus());
+            character.stats.Hp = character.stats.MaxHp;
+            character.stats.UpValue(StatsType.Sense, StatsType.Sense.GetInitialBonus());
+            character.stats.UpValue(StatsType.Strength, StatsType.Strength.GetInitialBonus());
+            character.stats.UpValue(StatsType.Speed, StatsType.Speed.GetInitialBonus());
+            character.stats.UpValue(StatsType.Jump, StatsType.Jump.GetInitialBonus());
+
             character.SetPos(new Vector2Int(coord.x, coord.y));
         }
     }

@@ -416,15 +416,13 @@ public class CharacterAI : MonoBehaviour
 
     private void Action(Item target)
     {
-        Dictionary<string, int> provides = target.Provide();
-        target.Vanish();
-        _findMap[target.pos.x, target.pos.y] = 0;//記憶から削除
+        Dictionary<StatsType, int> provides = target.Provide();
         foreach (var provide in provides)
         {
-            Type t = _character.GetType();
-            MethodInfo mi = t.GetMethod(provide.Key);
-            object o = mi.Invoke(_character, new object[] { provide.Value });
+            _character.stats.UpValue(provide.Key, provide.Value);
         }
+        target.Vanish();
+        _findMap[target.pos.x, target.pos.y] = 0;//記憶から削除
     }
 
     //再度思考
