@@ -359,7 +359,7 @@ public class CharacterAI : MonoBehaviour
 
     private float CalcDurationBySpeed(int speed)
     {
-        return _mapManager.tileSize / 100 / 4 * (3.0f - (float)speed / 10);
+        return _mapManager.tileSize / 100 / 4 * (6.0f - (float)speed / 10);
     }
 
     private IEnumerator Move()
