@@ -14,8 +14,10 @@ public class CharacterAI : MonoBehaviour
         Search, // 検索中.
         Walk, // 移動中.
         Find, // 発見.
+        Battle, // 戦闘中.
     }
 
+    [SerializeField]
     private eState _state = eState.Search;
 
     private Character _character;
@@ -45,9 +47,11 @@ public class CharacterAI : MonoBehaviour
     }
 
     [SerializeField]
-    private List<string> _enemies;
+    private List<Character> _enemies;
 
     private Item _target = null;
+
+    private Character _targetEnemy = null;
 
     // Start is called before the first frame update
     private IEnumerator Start()
@@ -64,7 +68,7 @@ public class CharacterAI : MonoBehaviour
         _findMap = new int[_map.GetLength(0), _map.GetLength(1)];
 
         _sensed = new List<Vector2Int>();
-        _enemies = new List<string>();
+        _enemies = new List<Character>();
 
         MakeCostMap();
 
@@ -321,8 +325,12 @@ public class CharacterAI : MonoBehaviour
             }
             if (_sensed.Contains(chara.pos))
             {
-                _enemies.Add(chara.GetComponent<Character>().uuid);
+                _enemies.Add(chara.GetComponent<Character>());
             }
+        }
+        if (_enemies.Count > 0)
+        {
+            _state = eState.Battle;
         }
     }
 
@@ -360,6 +368,54 @@ public class CharacterAI : MonoBehaviour
     private float CalcDurationBySpeed(int speed)
     {
         return _mapManager.tileSize / 100 / 4 * (6.0f - (float)speed / 10);
+    }
+
+    private void ChangeBattleStatus()
+    {
+        var findedItems = GetFindItems();
+
+        if (findedItems.Count > 0)
+        {
+            _target = findedItems.GetRandom();
+        }
+        if (_target)
+        {
+            SetRoute(_target.pos);
+            _state = eState.Find;
+        }
+        else
+        {
+            SetRoute(GetDestination());
+            _state = eState.Walk;
+        }
+    }
+
+    private void SetTactics()
+    {
+    }
+
+    private IEnumerator Battle()
+    {
+        //知覚エリア内のキャラクターを検索
+        FindCharas();
+        // 敵存在チェック
+        if (_enemies.Count < 1)
+        {
+            ChangeBattleStatus();
+            StartCoroutine("Move");
+            yield break;
+        }
+        yield return new WaitForSeconds(0.01f);
+
+        //戦術決定
+        SetTactics();
+
+        //移動
+
+        //行動
+
+        StartCoroutine("Battle");
+        yield break;
     }
 
     private IEnumerator Move()
@@ -400,7 +456,7 @@ public class CharacterAI : MonoBehaviour
                 //射程内のターゲットに対してアクション
                 if (_character.pos == _target.pos)
                 {
-                    Action(_target);
+                    Gain(_target);
                     _state = eState.Search;
                     break;
                 }
@@ -409,12 +465,17 @@ public class CharacterAI : MonoBehaviour
             {
                 if (_state == eState.Find)
                 {
-                    //発見物がなくなっていればルート再建策
+                    //発見物がなくなっていればルート再検索
                     _state = eState.Search;
                     break;
                 }
                 //知覚エリア内のキャラクターを検索
                 FindCharas();
+                if (_state == eState.Battle)
+                {
+                    StartCoroutine("Battle");
+                    yield break;
+                }
                 //知覚エリア内のターゲットを検索
                 FindItems();
                 var findedItems = GetFindItems();
@@ -440,9 +501,10 @@ public class CharacterAI : MonoBehaviour
         }
         _state = eState.Walk;
         StartCoroutine("Move");
+        yield break;
     }
 
-    private void Action(Item target)
+    private void Gain(Item target)
     {
         Dictionary<StatsType, int> provides = target.Provide();
         foreach (var provide in provides)
@@ -451,6 +513,12 @@ public class CharacterAI : MonoBehaviour
         }
         target.Vanish();
         _findMap[target.pos.x, target.pos.y] = 0;//記憶から削除
+    }
+
+    //攻撃
+    public void Attack()
+    {
+        //new Effect(_targetEnemy);
     }
 
     //再度思考
