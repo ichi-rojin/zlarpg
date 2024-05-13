@@ -15,6 +15,7 @@ public class CharacterAI : MonoBehaviour
         Walk, // ˆÚ“®’†.
         Find, // ”­Œ©.
         Battle, // í“¬’†.
+        Escape, // “¦‘–’†‚Í“G‚ğŒŸõ‚¹‚¸‚É‹ºˆĞƒ}ƒbƒv‚É]‚Á‚Ä“¦‘–‚·‚éB
     }
 
     [SerializeField]
@@ -45,6 +46,10 @@ public class CharacterAI : MonoBehaviour
     {
         get { return _sensed; }
     }
+
+    [SerializeField]
+    [Header("íˆÓ")]
+    private int _spirit = 0;
 
     [SerializeField]
     private List<Character> _enemies;
@@ -315,6 +320,7 @@ public class CharacterAI : MonoBehaviour
     private void FindCharas()
     {
         _enemies.Clear();
+
         List<Character> charas = new List<Character>();
         _charasParent.GetComponentsInChildren(charas);
         foreach (var chara in charas)
@@ -328,9 +334,12 @@ public class CharacterAI : MonoBehaviour
                 _enemies.Add(chara.GetComponent<Character>());
             }
         }
-        if (_enemies.Count > 0)
+        if (_state != eState.Escape)
         {
-            _state = eState.Battle;
+            if (_enemies.Count > 0)
+            {
+                _state = eState.Battle;
+            }
         }
     }
 
@@ -392,6 +401,7 @@ public class CharacterAI : MonoBehaviour
 
     private void SetTactics()
     {
+        var target = _enemies.GetRandom();
     }
 
     private IEnumerator Battle()
@@ -405,6 +415,15 @@ public class CharacterAI : MonoBehaviour
             StartCoroutine("Move");
             yield break;
         }
+
+        _spirit -= 1;
+        if (_spirit <= 0)
+        {
+            _state = eState.Escape;
+            StartCoroutine("Escape");
+            yield break;
+        }
+
         yield return new WaitForSeconds(0.01f);
 
         //ípŒˆ’è
@@ -415,6 +434,13 @@ public class CharacterAI : MonoBehaviour
         //s“®
 
         StartCoroutine("Battle");
+        yield break;
+    }
+
+    private IEnumerator Escape()
+    {
+        SetRoute(GetDestination());
+        StartCoroutine("Move");
         yield break;
     }
 
@@ -473,6 +499,7 @@ public class CharacterAI : MonoBehaviour
                 FindCharas();
                 if (_state == eState.Battle)
                 {
+                    _spirit = 100;
                     StartCoroutine("Battle");
                     yield break;
                 }
