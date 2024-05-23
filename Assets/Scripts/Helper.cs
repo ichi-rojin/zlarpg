@@ -1,7 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public static class Extensions
 {
@@ -68,5 +68,21 @@ public static class Extensions
             .Cast<T>()
             .ToList();
         return statusList.GetRandom();
+    }
+
+    public static Item GetNearestItem(this List<Item> source, Vector2Int pos)
+    {
+        if (source == null) throw new ArgumentNullException(nameof(source));
+
+        var finded = source.Aggregate((d1, d2) => (
+            Math.Abs(pos.x - d1.pos.x) + Math.Abs(pos.y - d1.pos.y)
+            <
+            Math.Abs(pos.x - d2.pos.x) + Math.Abs(pos.y - d2.pos.y)
+        ) ? d1 : d2);
+        if (finded != null)
+        {
+            return finded;
+        }
+        throw new InvalidOperationException("source is empty");
     }
 }

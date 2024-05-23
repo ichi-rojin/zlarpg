@@ -414,7 +414,7 @@ public class CharacterAI : MonoBehaviour
 
         if (findedItems.Count > 0)
         {
-            _target = findedItems.GetRandom();
+            _target = findedItems.GetNearestItem(_character.pos);
         }
         if (_target)
         {
@@ -596,7 +596,7 @@ public class CharacterAI : MonoBehaviour
 
                 if (findedItems.Count > 0)
                 {
-                    _target = findedItems.GetRandom();
+                    _target = findedItems.GetNearestItem(_character.pos);
                 }
                 if (_target)
                 {
