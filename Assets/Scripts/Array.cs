@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 internal struct SearchResult
 {
@@ -33,6 +34,34 @@ internal static class ArrayExtensions
             {
                 source[i, j] = value;
             }
+        }
+    }
+
+    public static void MinMaxNormalization(this float[,] source)
+    {
+        var data = source.Cast<float>();
+        float max = data.Max();
+        float min = data.Min();
+
+        for (var i = 0; i < source.GetLength(0); i++)
+        {
+            for (var j = 0; j < source.GetLength(1); j++)
+            {
+                source[i, j] = ((source[i, j] - min) / (max - min));
+            }
+        }
+    }
+
+    public static void Dump<T>(this T[,] source)
+    {
+        for (int i = 0; i < source.GetLength(0); i++)
+        {
+            string str = "";
+            for (int j = 0; j < source.GetLength(1); j++)
+            {
+                str = str + source[i, j] + " ";
+            }
+            Debug.Log(str);
         }
     }
 

@@ -40,6 +40,13 @@ public class CharacterAI : MonoBehaviour
 
     private int[,] _findMap;//発見物メモリ
 
+    private float[,] _influenceMap;
+
+    public float[,] influenceMap
+    {
+        get { return _influenceMap; }
+    }
+
     private List<Vector2Int> _sensed;
 
     public List<Vector2Int> sensed
@@ -71,16 +78,18 @@ public class CharacterAI : MonoBehaviour
         _map = _mapManager.map;
         _costMap = new int[_map.GetLength(0), _map.GetLength(1)];
         _findMap = new int[_map.GetLength(0), _map.GetLength(1)];
+        _influenceMap = new float[_map.GetLength(0), _map.GetLength(1)];
 
         _sensed = new List<Vector2Int>();
         _enemies = new List<Character>();
 
         MakeCostMap();
+        _influenceMap.Fill(0);//0で埋める
 
         yield return new WaitForSeconds(0.1f);
 
         // プレイヤーを移動させる.
-        SetRoute(GetDestination());
+        SetRoute(GetDestination(), _costMap);
         _state = eState.Walk;
         StartCoroutine("Move");
     }
@@ -156,12 +165,12 @@ public class CharacterAI : MonoBehaviour
         }
     }
 
-    private void SetRoute(Vector2Int destination)
+    private void SetRoute(Vector2Int destination, int[,] map)
     {
         Vector2Int startPos = _character.pos;
         Vector2Int endPos = destination;
 
-        _route = AStar.Serch(startPos, endPos, _costMap);
+        _route = AStar.Serch(startPos, endPos, map);
     }
 
     //視線
@@ -228,29 +237,35 @@ public class CharacterAI : MonoBehaviour
     }
 
     //視界
-    private List<Vector2Int> GetPerceptionCoords(int sign1, int sign2, bool reverse)
+    private List<Vector2Int> GetPerceptionCoords(
+        int sign1,
+        int sign2,
+        bool reverse,
+        Vector2Int origin,
+        int sense
+    )
     {
         List<Vector2Int> senses = new List<Vector2Int>();
-        var p1 = _character.stats[StatsType.Sense];
+        var p1 = sense;
         for (int p2 = -1 * p1; p2 < (p1 - 1) + 2; p2++)
         {
             Vector2Int coord = new Vector2Int();
             if (reverse != false)
             {
                 coord = new Vector2Int(
-                    _character.pos.x + p1 * sign1,
-                    _character.pos.y + p2 * sign2
+                    origin.x + p1 * sign1,
+                    origin.y + p2 * sign2
                 );
             }
             else
             {
                 coord = new Vector2Int(
-                    _character.pos.x + p2 * sign2
-                    , _character.pos.y + p1 * sign1
+                    origin.x + p2 * sign2,
+                    origin.y + p1 * sign1
                 );
             }
 
-            foreach (var sightCell in GetSightLines(_character.pos, coord, p1, reverse))
+            foreach (var sightCell in GetSightLines(origin, coord, p1, reverse))
             {
                 senses.Add(sightCell);
             }
@@ -258,40 +273,54 @@ public class CharacterAI : MonoBehaviour
         return senses;
     }
 
-    private void CreateSenseArea()
+    private List<Vector2Int> GetSenseArea(
+        Character.eOrientation orientation,
+        Vector2Int origin,
+        int sense
+    )
     {
-        _sensed.Clear();
+        var sensedArea = new List<Vector2Int>();
         Vector2Int senseNext1 = new Vector2Int();
         Vector2Int senseNext2 = new Vector2Int();
 
-        if (_character.orientation == Character.eOrientation.East)
+        if (orientation == Character.eOrientation.East)
         {
-            _sensed = GetPerceptionCoords(1, 1, true);
-            senseNext1 = _mapManager.GetNormalizePosition(_character.pos, 0, -1);
-            senseNext2 = _mapManager.GetNormalizePosition(_character.pos, 0, 1);
+            sensedArea = GetPerceptionCoords(1, 1, true, origin, sense);
+            senseNext1 = _mapManager.GetNormalizePosition(origin, 0, -1);
+            senseNext2 = _mapManager.GetNormalizePosition(origin, 0, 1);
         }
-        if (_character.orientation == Character.eOrientation.West)
+        if (orientation == Character.eOrientation.West)
         {
-            _sensed = GetPerceptionCoords(-1, -1, true);
-            senseNext1 = _mapManager.GetNormalizePosition(_character.pos, 0, -1);
-            senseNext2 = _mapManager.GetNormalizePosition(_character.pos, 0, 1);
+            sensedArea = GetPerceptionCoords(-1, -1, true, origin, sense);
+            senseNext1 = _mapManager.GetNormalizePosition(origin, 0, -1);
+            senseNext2 = _mapManager.GetNormalizePosition(origin, 0, 1);
         }
-        if (_character.orientation == Character.eOrientation.South)
+        if (orientation == Character.eOrientation.South)
         {
-            _sensed = GetPerceptionCoords(1, 1, false);
-            senseNext1 = _mapManager.GetNormalizePosition(_character.pos, -1, 0);
-            senseNext2 = _mapManager.GetNormalizePosition(_character.pos, 1, 0);
+            sensedArea = GetPerceptionCoords(1, 1, false, origin, sense);
+            senseNext1 = _mapManager.GetNormalizePosition(origin, -1, 0);
+            senseNext2 = _mapManager.GetNormalizePosition(origin, 1, 0);
         }
-        if (_character.orientation == Character.eOrientation.North)
+        if (orientation == Character.eOrientation.North)
         {
-            _sensed = GetPerceptionCoords(-1, -1, false);
-            senseNext1 = _mapManager.GetNormalizePosition(_character.pos, -1, 0);
-            senseNext2 = _mapManager.GetNormalizePosition(_character.pos, 1, 0);
+            sensedArea = GetPerceptionCoords(-1, -1, false, origin, sense);
+            senseNext1 = _mapManager.GetNormalizePosition(origin, -1, 0);
+            senseNext2 = _mapManager.GetNormalizePosition(origin, 1, 0);
         }
         //周囲を知覚範囲に含める
-        if (_costMap[senseNext1.x, senseNext1.y] > 0) _sensed.Add(senseNext1);
-        if (_costMap[senseNext2.x, senseNext2.y] > 0) _sensed.Add(senseNext2);
-        _sensed.Add(_character.pos);
+        if (_costMap[senseNext1.x, senseNext1.y] > 0) sensedArea.Add(senseNext1);
+        if (_costMap[senseNext2.x, senseNext2.y] > 0) sensedArea.Add(senseNext2);
+        sensedArea.Add(origin);
+        return sensedArea;
+    }
+
+    private void CreateSenseArea()
+    {
+        _sensed = GetSenseArea(
+            _character.orientation,
+            _character.pos,
+            _character.stats[StatsType.Sense]
+        );
     }
 
     private void FindItems()
@@ -389,18 +418,19 @@ public class CharacterAI : MonoBehaviour
         }
         if (_target)
         {
-            SetRoute(_target.pos);
+            SetRoute(_target.pos, _costMap);
             _state = eState.Find;
         }
         else
         {
-            SetRoute(GetDestination());
+            SetRoute(GetDestination(), _costMap);
             _state = eState.Walk;
         }
     }
 
     private void SetTactics()
     {
+        //【TODO】戦術決定
         var target = _enemies.GetRandom();
     }
 
@@ -437,9 +467,56 @@ public class CharacterAI : MonoBehaviour
         yield break;
     }
 
+    private int GetForecastSense(Character chara)
+    {
+        //【TODO】自分のSenseを基に予想、知能が高いほど相手のSenseに近い数字を返す。
+        return (_character.stats[StatsType.Sense] + chara.stats.Sense) / 2;
+    }
+
+    private int[,] GetCombedInflCostMaps()
+    {
+        var map = new int[_map.GetLength(0), _map.GetLength(1)];
+
+        for (var d1 = 0; d1 < map.GetLength(0); d1++)
+        {
+            for (var d2 = 0; d2 < map.GetLength(1); d2++)
+            {
+                map[d1, d2] = _costMap[d1, d2] + (int)(_influenceMap[d1, d2] * 100);
+            }
+        }
+        return map;
+    }
+
     private IEnumerator Escape()
     {
-        SetRoute(GetDestination());
+        _influenceMap.Fill(0);//脅威マップ初期化
+        foreach (var chara in _enemies)
+        {
+            var sense = GetForecastSense(chara);
+            var sensed = GetSenseArea(chara.orientation, chara.pos, sense);
+            var maxCost = sense + sense;
+            foreach (var p in sensed)
+            {
+                _influenceMap[p.x, p.y] = maxCost - (
+                    Math.Abs(chara.pos.x - p.x)
+                    + Math.Abs(chara.pos.y - p.y)
+                );
+            }
+        }
+        //0から1で正規化
+        _influenceMap.MinMaxNormalization();
+        var combedInflCostMaps = GetCombedInflCostMaps();
+        int cnt = 0;
+        while (cnt < 10)
+        {
+            var destination = GetDestination();
+            if (combedInflCostMaps[destination.x, destination.y] <= 2)
+            {
+                SetRoute(destination, combedInflCostMaps);
+                break;
+            }
+            cnt++;
+        }
         StartCoroutine("Move");
         yield break;
     }
@@ -455,9 +532,9 @@ public class CharacterAI : MonoBehaviour
 
             var findedMapTip = _mapManager.GetMapTip(p);
             var AdvancePermission = findedMapTip.GetAdvancePermission(_character);
+            var goal = _route.LastOrDefault();
             if (AdvancePermission == false)
             {
-                var goal = _route.LastOrDefault();
                 if (_findMap[goal.x, goal.y] > 0)
                 {
                     //ルートの最終地点に発見物があれば、進行不可にする。
@@ -476,6 +553,16 @@ public class CharacterAI : MonoBehaviour
 
             _character.SetPos(p);
             yield return new WaitForSeconds(duration);
+
+            //目的地に着いたら脅威をリセット
+            if (
+                _state != eState.Escape
+                &&
+                goal == p
+            )
+            {
+                ResetThreat();
+            }
 
             if (_target)
             {
@@ -513,7 +600,7 @@ public class CharacterAI : MonoBehaviour
                 }
                 if (_target)
                 {
-                    SetRoute(_target.pos);
+                    SetRoute(_target.pos, _costMap);
                     _state = eState.Find;
                     break;
                 }
@@ -524,11 +611,16 @@ public class CharacterAI : MonoBehaviour
         yield return new WaitForSeconds(0.01f);
         if (_state != eState.Find)
         {
-            SetRoute(GetDestination());
+            SetRoute(GetDestination(), _costMap);
         }
         _state = eState.Walk;
         StartCoroutine("Move");
         yield break;
+    }
+
+    private void ResetThreat()
+    {
+        _influenceMap.Fill(0);//脅威マップ初期化
     }
 
     private void Gain(Item target)
@@ -553,6 +645,9 @@ public class CharacterAI : MonoBehaviour
     {
         _target = null;
         _route.Clear();
-        _state = eState.Search;
+        if (_state != eState.Escape)
+        {
+            _state = eState.Search;
+        }
     }
 }

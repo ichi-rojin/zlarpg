@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -37,7 +38,48 @@ public class GameManager : MonoBehaviour
             treasureChest.GetComponent<Item>().SetPos(tileIndex);
         }
 
+        ResetAreaColor();
         ShowSensedArea();
+        ShowInfluenceArea();
+    }
+
+    private void ResetAreaColor()
+    {
+        GameObject[,] mapTips = _mapManager.mapTips;
+
+        for (var d1 = 0; d1 < mapTips.GetLength(0); d1++)
+        {
+            for (var d2 = 0; d2 < mapTips.GetLength(1); d2++)
+            {
+                var p = new Vector2Int(d1, d2);
+                var findedMapTip = _mapManager.GetMapTip(p);
+                var mapSpRdr = findedMapTip.GetComponent<SpriteRenderer>();
+                mapSpRdr.color = new Color(255f, 255f, 255f);
+            }
+        }
+    }
+
+    private void ShowInfluenceArea()
+    {
+        List<CharacterAI> charas = new List<CharacterAI>();
+        _charactersParent.GetComponentsInChildren(charas);
+        var chara = charas.First();
+        var ai = chara.GetComponent<CharacterAI>();
+        var map = ai.influenceMap;
+
+        for (var d1 = 0; d1 < map.GetLength(0); d1++)
+        {
+            for (var d2 = 0; d2 < map.GetLength(1); d2++)
+            {
+                var p = new Vector2Int(d1, d2);
+                var findedMapTip = _mapManager.GetMapTip(p);
+                var mapSpRdr = findedMapTip.GetComponent<SpriteRenderer>();
+                if (map[p.x, p.y] > 0.0f)
+                {
+                    mapSpRdr.color = new Color(1.0f - map[p.x, p.y], 0f, 0f, 1.0f);
+                }
+            }
+        }
     }
 
     private void ShowSensedArea()
@@ -65,10 +107,6 @@ public class GameManager : MonoBehaviour
                 if (senses.Contains(p))
                 {
                     mapSpRdr.color = new Color(0f, 255f, 255f);
-                }
-                else
-                {
-                    mapSpRdr.color = new Color(255f, 255f, 255f);
                 }
             }
         }
