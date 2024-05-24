@@ -22,6 +22,6 @@ MonoBehaviour:
     MaxHp: 100
     Sense: 3
     Strength: 3
-    Speed: 3
+    Speed: 10
     Jump: 1
     Prefab: {fileID: 1883682531497913629, guid: 8e2cf664ca75049488f68303f03acf64, type: 3}

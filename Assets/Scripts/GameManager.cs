@@ -63,20 +63,23 @@ public class GameManager : MonoBehaviour
     {
         List<CharacterAI> charas = new List<CharacterAI>();
         _charactersParent.GetComponentsInChildren(charas);
-        var chara = charas.First();
-        var ai = chara.GetComponent<CharacterAI>();
-        var map = ai.influenceMap;
-
-        for (var d1 = 0; d1 < map.GetLength(0); d1++)
+        foreach (var chara in charas)
         {
-            for (var d2 = 0; d2 < map.GetLength(1); d2++)
+            var ai = chara.GetComponent<CharacterAI>();
+            var map = ai.influenceMap;
+
+            for (var d1 = 0; d1 < map.GetLength(0); d1++)
             {
-                var p = new Vector2Int(d1, d2);
-                var findedMapTip = _mapManager.GetMapTip(p);
-                var mapSpRdr = findedMapTip.GetComponent<SpriteRenderer>();
-                if (map[p.x, p.y] > 0.0f)
+                for (var d2 = 0; d2 < map.GetLength(1); d2++)
                 {
-                    mapSpRdr.color = new Color(1.0f - map[p.x, p.y], 0f, 0f, 1.0f);
+                    var p = new Vector2Int(d1, d2);
+                    var findedMapTip = _mapManager.GetMapTip(p);
+                    var mapSpRdr = findedMapTip.GetComponent<SpriteRenderer>();
+                    if (map[p.x, p.y] > 0.0f)
+                    {
+                        var n = 1.0f - map[p.x, p.y];
+                        mapSpRdr.color = new Color(n, 0f, n, 1.0f);
+                    }
                 }
             }
         }
