@@ -128,40 +128,22 @@ public class CharacterAI : MonoBehaviour
 
     private void SetOrientation(Vector2Int prev, Vector2Int next)
     {
-        if (
-            prev.x == next.x
-            &&
-            prev.y == next.y
-        ) return;
-
-        if (
-            prev.y == next.y
-        )
+        Vector2Int forward = prev - next;
+        if (forward == Vector2Int.left)
         {
-            if (prev.x < next.x)
-            {
-                _character.SetOrientation(Character.eOrientation.East);
-            }
-            else
-            {
-                _character.SetOrientation(Character.eOrientation.West);
-            }
-            return;
+            _character.SetOrientation(Character.eOrientation.East);
         }
-
-        if (
-            prev.x == next.x
-        )
+        if (forward == Vector2Int.right)
         {
-            if (prev.y < next.y)
-            {
-                _character.SetOrientation(Character.eOrientation.South);
-            }
-            else
-            {
-                _character.SetOrientation(Character.eOrientation.North);
-            }
-            return;
+            _character.SetOrientation(Character.eOrientation.West);
+        }
+        if (forward == Vector2Int.up)
+        {
+            _character.SetOrientation(Character.eOrientation.North);
+        }
+        if (forward == Vector2Int.down)
+        {
+            _character.SetOrientation(Character.eOrientation.South);
         }
     }
 
