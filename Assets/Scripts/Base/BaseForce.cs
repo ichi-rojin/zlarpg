@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BaseForce : MonoBehaviour
+public class BaseForce : Token
 {
     protected BaseForceSpawner spawner;
     protected ForceSpawnerStats stats;
