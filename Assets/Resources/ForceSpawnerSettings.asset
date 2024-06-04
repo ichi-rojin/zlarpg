@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9dd0fb7a6defa64ca422a0246f45a2d, type: 3}
+  m_Name: ForceSpawnerSettings
+  m_EditorClassIdentifier: 
+  datas:
+  - Title: "\u77E2"
+    Id: 1
+    Lv: 1
+    Name: "\u77E2"
+    Description: 
+    Physical: 3
+    Speed: 20
+    Range: 10
+    SpawnCount: 1
+    Prefab: {fileID: 2271396579465896647, guid: eb5ea995007c9254c811bf7708bef1f3, type: 3}

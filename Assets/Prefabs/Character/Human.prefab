@@ -104,13 +104,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd0cdb0e0d7a8da4d8836f0edd1262ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pos: {x: 0, y: 0}
   _uuid: 
-  _hp: 0
-  _sense: 0
-  _strength: 0
-  _speed: 0
-  _jump: 0
+  _pos: {x: 0, y: 0}
+  _stats:
+    Title: 
+    Id: 0
+    Lv: 0
+    Name: 
+    Description: 
+    Hp: 0
+    MaxHp: 0
+    Sense: 0
+    Strength: 0
+    Speed: 0
+    Jump: 0
+    Prefab: {fileID: 0}
+    DefaultForceIds: 
+    UsableForceIds: 
+    UsableForceMax: 0
+  _orientation: 2
 --- !u!114 &8420676089073677139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,6 +135,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12fdf982aba756048a9b3ddbb86a8672, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _state: 0
+  _spirit: 0
+  _enemies: []
 --- !u!95 &609126226924083693
 Animator:
   serializedVersion: 5

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ForceSpawnerStats
+public class BaseForceSpawnerStats
 {
     //Inspectorで表示されるタイトル
     public string Title;
@@ -11,6 +11,8 @@ public class ForceSpawnerStats
     [TextArea] public string Description;
     public int Physical;
     public int Speed;
+    public int Range;
+    public int SpawnCount;
 
     // ForceTypeとの紐づけ　インデクサ
     public int this[ForceType key]
@@ -23,6 +25,12 @@ public class ForceSpawnerStats
                     return Physical;
 
                 case ForceType.Speed:
+                    return Speed;
+
+                case ForceType.Range:
+                    return Speed;
+
+                case ForceType.SpawnCount:
                     return Speed;
 
                 default:
@@ -45,9 +53,9 @@ public class ForceSpawnerStats
         }
     }
 
-    public ForceSpawnerStats GetCopy()
+    public BaseForceSpawnerStats GetCopy()
     {
-        return (ForceSpawnerStats)MemberwiseClone();
+        return (BaseForceSpawnerStats)MemberwiseClone();
     }
 
     public void UpValue(ForceType type, int value)

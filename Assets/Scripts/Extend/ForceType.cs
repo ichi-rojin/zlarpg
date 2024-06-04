@@ -5,57 +5,10 @@ public enum ForceType
 {
     Physical,
     Speed,
+    Range,
+    SpawnCount,
 }
 
 public static partial class ForceTypeExtend
 {
-    public static int GetUpRandomValue(this ForceType param)
-    {
-        int value = new int();
-        int lessI = 1;//intŒ^‚ÌRandom.Range‚Ímax‚ðŠÜ‚Ü‚È‚¢‚½‚ß
-        switch (param)
-        {
-            case ForceType.Physical:
-                value = Random.Range(0, 5 + lessI);
-                break;
-
-            case ForceType.Speed:
-                value = Random.Range(0, 1 + lessI);
-                break;
-        }
-        return value;
-    }
-
-    public static int GetInitialBonus(this ForceType param)
-    {
-        int value = new int();
-        int lessI = 1;//intŒ^‚ÌRandom.Range‚Ímax‚ðŠÜ‚Ü‚È‚¢‚½‚ß
-        switch (param)
-        {
-            case ForceType.Physical:
-                value = Random.Range(0, 3 + lessI);
-                break;
-
-            case ForceType.Speed:
-                value = Random.Range(0, 3 + lessI);
-                break;
-        }
-        return value;
-    }
-
-    public static int GetMaxValue(this ForceType param)
-    {
-        int value = new int();
-        switch (param)
-        {
-            case ForceType.Physical:
-                value = 15;
-                break;
-
-            case ForceType.Speed:
-                value = 20;
-                break;
-        }
-        return value;
-    }
 }

@@ -5,17 +5,22 @@ using UnityEngine;
 public class BaseForceSpawner : MonoBehaviour
 {
     public GameObject PrefabForce;
-    public ForceSpawnerStats Stats;
-    private List<BaseForce> _forces;
+    public ForceSpawnerStats _stats;
 
-    public void Init()
+    // 生成タイマー
+    protected float _spawnTimer;
+
+    protected List<BaseForce> _forces;
+
+    public void Init(ForceSpawnerStats stats)
     {
         _forces = new List<BaseForce>();
+        _stats = stats;
     }
 
-    protected BaseForce CreateForce(Vector2 pos, Vector2Int forward, Transform parent)
+    protected BaseForce CreateForce(Vector2 coord, Vector2Int forward, Character target = null, Transform parent = null)
     {
-        GameObject obj = Instantiate(PrefabForce, pos, PrefabForce.transform.rotation);
+        GameObject obj = Instantiate(PrefabForce, coord, PrefabForce.transform.rotation, parent);
         BaseForce force = obj.GetComponent<BaseForce>();
         force.Init(this, forward);
         _forces.Add(force);
@@ -23,8 +28,8 @@ public class BaseForceSpawner : MonoBehaviour
         return force;
     }
 
-    protected BaseForce CreateForce(Vector2Int pos, Transform parent = null)
+    protected BaseForce CreateForce(Vector2 coord, Character target = null, Transform parent = null)
     {
-        return CreateForce(pos, Vector2Int.zero, parent);
+        return CreateForce(coord, Vector2Int.zero, target, parent);
     }
 }

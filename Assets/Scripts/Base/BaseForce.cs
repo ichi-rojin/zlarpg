@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class BaseForce : Token
 {
-    protected BaseForceSpawner spawner;
-    protected ForceSpawnerStats stats;
-    protected Vector2Int forward;
+    protected BaseForceSpawner _spawner;
+    protected ForceSpawnerStats _stats;
+    protected Vector2Int _forward;
 
     public void Init(BaseForceSpawner spawner, Vector2Int forward)
     {
-        this.spawner = spawner;
-        this.stats = (ForceSpawnerStats)spawner.Stats.GetCopy();
-        this.forward = forward;
+        _spawner = spawner;
+        _stats = (ForceSpawnerStats)spawner._stats.GetCopy();
+        _forward = forward;
     }
 
     protected void AttackTarget(int attack, Character target)

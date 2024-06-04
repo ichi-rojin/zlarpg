@@ -432,6 +432,7 @@ public class CharacterAI : MonoBehaviour
         if (_spirit <= 0)
         {
             _state = eState.Escape;
+            _targetEnemy = null;
             StartCoroutine("Escape");
             yield break;
         }
@@ -444,6 +445,7 @@ public class CharacterAI : MonoBehaviour
         //移動
 
         //行動
+        Attack();
 
         StartCoroutine("Battle");
         yield break;
@@ -569,6 +571,7 @@ public class CharacterAI : MonoBehaviour
                 if (_state == eState.Battle)
                 {
                     _spirit = 100;
+                    _targetEnemy = _enemies.GetRandom();
                     StartCoroutine("Battle");
                     yield break;
                 }
@@ -619,7 +622,14 @@ public class CharacterAI : MonoBehaviour
     //攻撃
     public void Attack()
     {
-        //new Effect(_targetEnemy);
+        var spawners = _character.forceSpawners;
+        foreach (var gameObj in spawners)
+        {
+            var spawner = gameObj.GetComponent<ArrowSpawner>();
+            var pos = _character.pos;
+            var coord = _mapManager.GetWorldPositionFromTile(pos.x, pos.y);
+            spawner.Action(coord, _targetEnemy);
+        }
     }
 
     //再度思考

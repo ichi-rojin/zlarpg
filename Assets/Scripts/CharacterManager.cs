@@ -21,10 +21,9 @@ public class CharacterManager : MonoBehaviour
 
         for (int i = 0; i < SPAWN_NUMBER; i++)
         {
-            Vector2Int coord = _mapManager.GetRandomCoord();
-            Vector2 pos = _mapManager.GetWorldPositionFromTile(coord.x, coord.y); // Šî“_‚ÌÀ•W‚ðŒ³‚É•Ï”pos‚ðéŒ¾
+            Vector2Int pos = _mapManager.GetRandomCoord();
             int characterId = 0;
-            GameObject charaGameObject = CharacterSettings.Instance.CreateCharacter(characterId, pos, _parent);
+            GameObject charaGameObject = CharacterSettings.Instance.CreateCharacter(characterId, _mapManager, pos, _parent);
             Character character = charaGameObject.GetComponent<Character>();
 
             character.stats.UpValue(StatsType.MaxHp, StatsType.MaxHp.GetInitialBonus());
@@ -33,8 +32,6 @@ public class CharacterManager : MonoBehaviour
             character.stats.UpValue(StatsType.Strength, StatsType.Strength.GetInitialBonus());
             character.stats.UpValue(StatsType.Speed, StatsType.Speed.GetInitialBonus());
             character.stats.UpValue(StatsType.Jump, StatsType.Jump.GetInitialBonus());
-
-            character.SetPos(new Vector2Int(coord.x, coord.y));
         }
     }
 }
