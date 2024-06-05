@@ -85,9 +85,9 @@ public class BaseStats
         }
     }
 
-    public BaseStats GetCopy()
+    public T GetCopy<T>()
     {
-        return (BaseStats)MemberwiseClone();
+        return (T)MemberwiseClone();
     }
 
     public void UpValue(StatsType type, int value)

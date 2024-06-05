@@ -24,7 +24,7 @@ public class CharacterSettings : ScriptableObject
 
     public CharacterStats Get(int id)
     {
-        return (CharacterStats)datas.Find(item => item.Id == id).GetCopy();
+        return datas.Find(item => item.Id == id).GetCopy<CharacterStats>();
     }
 
     // ƒLƒƒƒ‰¶¬

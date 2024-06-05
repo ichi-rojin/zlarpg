@@ -4,7 +4,16 @@ using UnityEngine;
 public class Character : Token
 {
     [SerializeField]
-    [Header("ステータス")]
+    [Header("上限ステータス")]
+    private CharacterStats _maxStats;
+
+    public CharacterStats maxStats
+    {
+        get { return _maxStats; }
+    }
+
+    [SerializeField]
+    [Header("現在ステータス")]
     private CharacterStats _stats;
 
     public CharacterStats stats
@@ -43,10 +52,11 @@ public class Character : Token
 
     // Start is called before the first frame update
 
-    public void Init(CharacterStats stats, MapManager mapManager)
+    public void Init(CharacterStats maxStats, MapManager mapManager)
     {
         _animator = GetComponent<Animator>();
-        _stats = stats;
+        _maxStats = maxStats;
+        _stats = _maxStats.GetCopy<CharacterStats>();
         _forceSpawners = new List<BaseForceSpawner>();
         _mapManager = mapManager;
         AddForces(stats);

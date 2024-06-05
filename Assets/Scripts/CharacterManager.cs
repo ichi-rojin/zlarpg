@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 [DefaultExecutionOrder(1)]
@@ -26,12 +25,11 @@ public class CharacterManager : MonoBehaviour
             GameObject charaGameObject = CharacterSettings.Instance.CreateCharacter(characterId, _mapManager, pos, _parent);
             Character character = charaGameObject.GetComponent<Character>();
 
-            character.stats.UpValue(StatsType.MaxHp, StatsType.MaxHp.GetInitialBonus());
-            character.stats.Hp = character.stats.MaxHp;
-            character.stats.UpValue(StatsType.Sense, StatsType.Sense.GetInitialBonus());
-            character.stats.UpValue(StatsType.Strength, StatsType.Strength.GetInitialBonus());
-            character.stats.UpValue(StatsType.Speed, StatsType.Speed.GetInitialBonus());
-            character.stats.UpValue(StatsType.Jump, StatsType.Jump.GetInitialBonus());
+            foreach (StatsType Value in Enum.GetValues(typeof(StatsType)))
+            {
+                character.maxStats.UpValue(Value, Value.GetInitialBonus());
+                character.stats[Value] = character.maxStats[Value];
+            }
         }
     }
 }
