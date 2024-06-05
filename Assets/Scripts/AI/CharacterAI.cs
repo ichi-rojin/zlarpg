@@ -390,8 +390,9 @@ public class CharacterAI : MonoBehaviour
         return _mapManager.tileSize / 100 / 4 * (6.0f - (float)speed / 10);
     }
 
-    private void ChangeBattleStatus()
+    private void TransitionStatusFromBattle()
     {
+        _targetEnemy = null;
         var findedItems = GetFindItems();
 
         if (findedItems.Count > 0)
@@ -413,7 +414,47 @@ public class CharacterAI : MonoBehaviour
     private void SetTactics()
     {
         //【TODO】戦術決定
-        var target = _enemies.GetRandom();
+        _targetEnemy = _enemies.GetRandom();
+    }
+
+    private float CalcDurationByThroughput()
+    {
+        float throughput = _character.stats[StatsType.Throughput];
+        float max = StatsType.Throughput.GetMaxValue();
+        float min = 10;
+        float normalize = 1 - ((throughput - min) / (max - min));
+        return 0.5f + normalize * 4;
+    }
+
+    private void ControlsBattleAction(bool status)
+    {
+        if (status == true)
+        {
+            StartCoroutine("Battle");
+            StartCoroutine("Tactics");
+        }
+        else
+        {
+            StopCoroutine("Battle");
+            StopCoroutine("Tactics");
+        }
+    }
+
+    private IEnumerator Tactics()
+    {
+        float duration = CalcDurationByThroughput();
+        yield return new WaitForSeconds(duration);
+
+        //戦術決定
+        SetTactics();
+
+        //移動
+
+        //行動
+        Attack();
+
+        StartCoroutine("Tactics");
+        yield break;
     }
 
     private IEnumerator Battle()
@@ -423,7 +464,8 @@ public class CharacterAI : MonoBehaviour
         // 敵存在チェック
         if (_enemies.Count < 1)
         {
-            ChangeBattleStatus();
+            TransitionStatusFromBattle();
+            ControlsBattleAction(false);
             StartCoroutine("Move");
             yield break;
         }
@@ -432,20 +474,12 @@ public class CharacterAI : MonoBehaviour
         if (_spirit <= 0)
         {
             _state = eState.Escape;
-            _targetEnemy = null;
+            ControlsBattleAction(false);
             StartCoroutine("Escape");
             yield break;
         }
 
-        yield return new WaitForSeconds(0.01f);
-
-        //戦術決定
-        SetTactics();
-
-        //移動
-
-        //行動
-        Attack();
+        yield return new WaitForSeconds(0.1f);
 
         StartCoroutine("Battle");
         yield break;
@@ -571,8 +605,7 @@ public class CharacterAI : MonoBehaviour
                 if (_state == eState.Battle)
                 {
                     _spirit = 100;
-                    _targetEnemy = _enemies.GetRandom();
-                    StartCoroutine("Battle");
+                    ControlsBattleAction(true);
                     yield break;
                 }
                 //知覚エリア内のターゲットを検索
@@ -594,6 +627,7 @@ public class CharacterAI : MonoBehaviour
         }
 
         yield return new WaitForSeconds(0.01f);
+
         if (_state != eState.Find)
         {
             SetRoute(GetDestination(), _costMap);
@@ -613,7 +647,8 @@ public class CharacterAI : MonoBehaviour
         Dictionary<StatsType, int> provides = target.Provide();
         foreach (var provide in provides)
         {
-            _character.stats.UpValue(provide.Key, provide.Value);
+            _character.maxStats.UpValue(provide.Key, provide.Value);
+            _character.stats[provide.Key] = _character.maxStats[provide.Key];
         }
         target.Vanish();
         _findMap[target.pos.x, target.pos.y] = 0;//記憶から削除
