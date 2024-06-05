@@ -4,11 +4,12 @@ using UnityEngine;
 public enum StatsType
 {
     Hp,
-    MaxHp,
     Sense,
     Strength,
     Speed,
     Jump,
+    Throughput,
+    Memory,
 }
 
 public static partial class StatsTypeExtend
@@ -19,7 +20,7 @@ public static partial class StatsTypeExtend
         int lessI = 1;//intŒ^‚ÌRandom.Range‚Ímax‚ðŠÜ‚Ü‚È‚¢‚½‚ß
         switch (param)
         {
-            case StatsType.MaxHp:
+            case StatsType.Hp:
                 value = Random.Range(0, 10 + lessI);
                 break;
 
@@ -38,6 +39,14 @@ public static partial class StatsTypeExtend
             case StatsType.Jump:
                 value = Random.Range(0, 1 + lessI);
                 break;
+
+            case StatsType.Throughput:
+                value = Random.Range(0, 1 + lessI);
+                break;
+
+            case StatsType.Memory:
+                value = Random.Range(0, 1 + lessI);
+                break;
         }
         return value;
     }
@@ -48,7 +57,7 @@ public static partial class StatsTypeExtend
         int lessI = 1;//intŒ^‚ÌRandom.Range‚Ímax‚ðŠÜ‚Ü‚È‚¢‚½‚ß
         switch (param)
         {
-            case StatsType.MaxHp:
+            case StatsType.Hp:
                 value = Random.Range(0, 200 + lessI);
                 break;
 
@@ -67,6 +76,14 @@ public static partial class StatsTypeExtend
             case StatsType.Jump:
                 value = Random.Range(0, 3 + lessI);
                 break;
+
+            case StatsType.Throughput:
+                value = Random.Range(0, 50 + lessI);
+                break;
+
+            case StatsType.Memory:
+                value = Random.Range(0, 50 + lessI);
+                break;
         }
         return value;
     }
@@ -76,7 +93,7 @@ public static partial class StatsTypeExtend
         int value = new int();
         switch (param)
         {
-            case StatsType.MaxHp:
+            case StatsType.Hp:
                 value = 1000;
                 break;
 
@@ -94,6 +111,14 @@ public static partial class StatsTypeExtend
 
             case StatsType.Jump:
                 value = 10;
+                break;
+
+            case StatsType.Throughput:
+                value = 100;
+                break;
+
+            case StatsType.Memory:
+                value = 100;
                 break;
         }
         return value;

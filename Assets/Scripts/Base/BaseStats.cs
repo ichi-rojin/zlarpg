@@ -10,11 +10,12 @@ public class BaseStats
     public string Name;
     [TextArea] public string Description;
     public int Hp;
-    public int MaxHp;
     public int Sense;
     public int Strength;
     public int Speed;
     public int Jump;
+    public int Throughput;
+    public int Memory;
 
     // StatsTypeとの紐づけ　インデクサ
     public int this[StatsType key]
@@ -25,9 +26,6 @@ public class BaseStats
             {
                 case StatsType.Hp:
                     return Hp;
-
-                case StatsType.MaxHp:
-                    return MaxHp;
 
                 case StatsType.Sense:
                     return Sense;
@@ -41,6 +39,12 @@ public class BaseStats
                 case StatsType.Jump:
                     return Jump;
 
+                case StatsType.Throughput:
+                    return Throughput;
+
+                case StatsType.Memory:
+                    return Memory;
+
                 default:
                     return 0;
             }
@@ -52,10 +56,6 @@ public class BaseStats
             {
                 case StatsType.Hp:
                     Hp = value;
-                    break;
-
-                case StatsType.MaxHp:
-                    MaxHp = value;
                     break;
 
                 case StatsType.Sense:
@@ -72,6 +72,14 @@ public class BaseStats
 
                 case StatsType.Jump:
                     Jump = value;
+                    break;
+
+                case StatsType.Throughput:
+                    Throughput = value;
+                    break;
+
+                case StatsType.Memory:
+                    Memory = value;
                     break;
             }
         }
