@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
-using System.Reflection;
 using System;
 using System.Linq;
 
@@ -22,7 +20,6 @@ public class CharacterAI : MonoBehaviour
     private eState _state = eState.Search;
 
     private Character _character;
-    private Transform _transform;
 
     private List<Vector2Int> _route;
 
@@ -73,7 +70,6 @@ public class CharacterAI : MonoBehaviour
         _itemsParent = GameObject.Find("ItemBlocks");
         _charasParent = GameObject.Find("Characters");
         _character = this.gameObject.GetComponent<Character>();
-        _transform = this.gameObject.transform;
 
         _map = _mapManager.map;
         _costMap = new int[_map.GetLength(0), _map.GetLength(1)];
@@ -564,12 +560,7 @@ public class CharacterAI : MonoBehaviour
                 break;
             }
 
-            _transform.DOMove(
-                _mapManager.GetWorldPositionFromTile(p.x, p.y),
-                duration
-            ).SetEase(Ease.Linear);
-
-            _character.SetPos(p);
+            _character.MovePosition(p, duration);
             yield return new WaitForSeconds(duration);
 
             //目的地に着いたら脅威をリセット
