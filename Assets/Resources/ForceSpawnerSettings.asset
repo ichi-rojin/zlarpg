@@ -22,4 +22,5 @@ MonoBehaviour:
     Speed: 20
     Range: 10
     SpawnCount: 1
+    AliveTime: 3.5
     Prefab: {fileID: 2271396579465896647, guid: eb5ea995007c9254c811bf7708bef1f3, type: 3}

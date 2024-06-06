@@ -151,69 +151,6 @@ public class CharacterAI : MonoBehaviour
         _route = AStar.Serch(startPos, endPos, map);
     }
 
-    //‹ü
-    private List<Vector2Int> GetSightLines(Vector2Int start, Vector2Int end, int dist, bool horizontal)
-    {
-        List<Vector2Int> SightList = new List<Vector2Int>();
-        if (horizontal)
-        {
-            if (end.y < 0)
-            {
-                return SightList;
-            }
-        }
-        else
-        {
-            if (end.x < 0)
-            {
-                return SightList;
-            }
-        }
-        int step = 1;
-        float dx = end.x - start.x;
-        float dy = end.y - start.y;
-        float t = dx != 0 ? dx / dy : 0;
-        if (horizontal)
-        {
-            t = dy != 0 ? dy / dx : 0;
-        }
-        int i = 0;
-        float nx = start.x;
-        float ny = start.y;
-        while (i < dist)
-        {
-            i += step;
-            if (horizontal)
-            {
-                nx += step * Math.Sign(dx);
-                ny += t;
-            }
-            else
-            {
-                nx += t;
-                ny += step * Math.Sign(dy);
-            }
-            int nxi = (int)Math.Round(nx);
-            int nyi = (int)Math.Round(ny);
-            Vector2Int p = _mapManager.GetNormalizePosition(new Vector2Int(nxi, nyi), 0, 0);
-            if (
-                p.x < 0
-                ||
-                p.y < 0
-                ||
-                _costMap[p.x, p.y] < 0
-            )
-            {
-                break;
-            }
-            if (SightList.Contains(p) == false)
-            {
-                SightList.Add(p);
-            }
-        }
-        return SightList;
-    }
-
     //‹ŠE
     private List<Vector2Int> GetPerceptionCoords(
         int sign1,
@@ -243,7 +180,20 @@ public class CharacterAI : MonoBehaviour
                 );
             }
 
-            foreach (var sightCell in GetSightLines(origin, coord, p1, reverse))
+            foreach (var sightCell in _mapManager.GetSightLines(origin, coord, p1, reverse, (p) =>
+            {
+                if (
+                    p.x < 0
+                    ||
+                    p.y < 0
+                    ||
+                    _costMap[p.x, p.y] < 0
+                )
+                {
+                    return true;
+                }
+                return false;
+            }))
             {
                 senses.Add(sightCell);
             }
@@ -381,11 +331,6 @@ public class CharacterAI : MonoBehaviour
         return findedItems;
     }
 
-    private float CalcDurationBySpeed(int speed)
-    {
-        return _mapManager.tileSize / 100 / 4 * (6.0f - (float)speed / 10);
-    }
-
     private void TransitionStatusFromBattle()
     {
         _targetEnemy = null;
@@ -438,9 +383,6 @@ public class CharacterAI : MonoBehaviour
 
     private IEnumerator Tactics()
     {
-        float duration = CalcDurationByThroughput();
-        yield return new WaitForSeconds(duration);
-
         //ípŒˆ’è
         SetTactics();
 
@@ -449,6 +391,8 @@ public class CharacterAI : MonoBehaviour
         //s“®
         Attack();
 
+        float duration = CalcDurationByThroughput();
+        yield return new WaitForSeconds(duration);
         StartCoroutine("Tactics");
         yield break;
     }
@@ -537,7 +481,7 @@ public class CharacterAI : MonoBehaviour
 
     private IEnumerator Move()
     {
-        float duration = CalcDurationBySpeed(_character.stats[StatsType.Speed]);
+        float duration = _mapManager.CalcDurationBySpeed(_character.stats[StatsType.Speed]);
         var i = 0;
         foreach (var p in _route)
         {

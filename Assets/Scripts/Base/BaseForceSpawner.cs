@@ -5,6 +5,9 @@ using UnityEngine;
 public class BaseForceSpawner : MonoBehaviour
 {
     public GameObject PrefabForce;
+    public GameObject _parent;
+    public Token _parentToken;
+    protected GameObject _forcesParent;
     public ForceSpawnerStats _stats;
 
     // 生成タイマー
@@ -14,6 +17,9 @@ public class BaseForceSpawner : MonoBehaviour
 
     public void Init(ForceSpawnerStats stats)
     {
+        _parent = transform.parent.gameObject;
+        _parentToken = _parent.GetComponent<Token>();
+        _forcesParent = GameObject.Find("Forces");
         _forces = new List<BaseForce>();
         _stats = stats;
     }
@@ -23,6 +29,7 @@ public class BaseForceSpawner : MonoBehaviour
         GameObject obj = Instantiate(PrefabForce, coord, PrefabForce.transform.rotation, parent);
         BaseForce force = obj.GetComponent<BaseForce>();
         force.Init(this, forward);
+        force.SetPos(_parentToken.pos);
         _forces.Add(force);
 
         return force;

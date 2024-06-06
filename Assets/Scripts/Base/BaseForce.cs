@@ -13,6 +13,12 @@ public class BaseForce : Token
         _spawner = spawner;
         _stats = (ForceSpawnerStats)spawner._stats.GetCopy();
         _forward = forward;
+
+        // ¶‘¶ŽžŠÔ‚ª‚ ‚ê‚ÎÝ’è‚·‚é
+        if (_stats.AliveTime > 0)
+        {
+            Vanish(_stats.AliveTime);
+        }
     }
 
     protected void AttackTarget(int attack, Character target)

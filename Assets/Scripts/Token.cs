@@ -6,7 +6,7 @@ public class Token : MonoBehaviour
 {
     private Transform _transform;
     private GameObject _managers;
-    private MapManager _mapManager;
+    internal MapManager _mapManager;
 
     [SerializeField]
     [Header("ÉÜÉjÅ[ÉNID")]
@@ -57,6 +57,11 @@ public class Token : MonoBehaviour
     {
         var coord = _mapManager.GetWorldPositionFromTile(p.x, p.y);
         MovePosition(coord, p, duration);
+    }
+
+    public void Vanish(float sec)
+    {
+        Destroy(this.gameObject, sec);
     }
 
     public void Vanish()

@@ -13,6 +13,7 @@ public class BaseForceSpawnerStats
     public int Speed;
     public int Range;
     public int SpawnCount;
+    public float AliveTime;
 
     // ForceTypeとの紐づけ　インデクサ
     public int this[ForceType key]
@@ -28,10 +29,10 @@ public class BaseForceSpawnerStats
                     return Speed;
 
                 case ForceType.Range:
-                    return Speed;
+                    return Range;
 
                 case ForceType.SpawnCount:
-                    return Speed;
+                    return SpawnCount;
 
                 default:
                     return 0;
@@ -48,6 +49,14 @@ public class BaseForceSpawnerStats
 
                 case ForceType.Speed:
                     Speed = value;
+                    break;
+
+                case ForceType.Range:
+                    Range = value;
+                    break;
+
+                case ForceType.SpawnCount:
+                    SpawnCount = value;
                     break;
             }
         }

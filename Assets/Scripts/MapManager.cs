@@ -171,4 +171,73 @@ public class MapManager : MonoBehaviour
         var map = mapTip.GetComponent<Map>();
         return map;
     }
+
+    public float CalcDurationBySpeed(int speed)
+    {
+        return _tileSize / 100 / 4 * (6.0f - (float)speed / 10);
+    }
+
+    //éãê¸
+    public List<Vector2Int> GetSightLines(
+        Vector2Int start,
+        Vector2Int end,
+        int dist,
+        bool horizontal,
+        Func<Vector2Int, bool> stopCond
+    )
+    {
+        List<Vector2Int> SightList = new List<Vector2Int>();
+        if (horizontal)
+        {
+            if (end.y < 0)
+            {
+                return SightList;
+            }
+        }
+        else
+        {
+            if (end.x < 0)
+            {
+                return SightList;
+            }
+        }
+        int step = 1;
+        Vector2 d = end - start;
+        float t = d.x != 0 ? d.x / d.y : 0;
+        if (horizontal)
+        {
+            t = d.y != 0 ? d.y / d.x : 0;
+        }
+        int i = 0;
+        float nx = start.x;
+        float ny = start.y;
+        while (i < dist)
+        {
+            i += step;
+            if (horizontal)
+            {
+                nx += step * Math.Sign(d.x);
+                ny += t;
+            }
+            else
+            {
+                nx += t;
+                ny += step * Math.Sign(d.y);
+            }
+            int nxi = (int)Math.Round(nx);
+            int nyi = (int)Math.Round(ny);
+            Vector2Int p = GetNormalizePosition(new Vector2Int(nxi, nyi), 0, 0);
+            if (
+                stopCond(p)
+            )
+            {
+                break;
+            }
+            if (SightList.Contains(p) == false)
+            {
+                SightList.Add(p);
+            }
+        }
+        return SightList;
+    }
 }
