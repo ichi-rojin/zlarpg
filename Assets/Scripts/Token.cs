@@ -28,9 +28,15 @@ public class Token : MonoBehaviour
         get { return _pos; }
     }
 
+    public void SetPos(int x, int y)
+    {
+        _pos.x = x;
+        _pos.y = y;
+    }
+
     public void SetPos(Vector2Int pos)
     {
-        _pos = pos;
+        SetPos(pos.x, pos.y);
     }
 
     private void Awake()

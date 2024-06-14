@@ -24,6 +24,11 @@ public class BaseForce : Token
         _forward = forward;
     }
 
+    private void Update()
+    {
+        SetPos(_mapManager.GetPosByCoord(_transform.position));
+    }
+
     protected void AttackTarget(int attack, Character target)
     {
         if (!target.TryGetComponent<Character>(out var character)) return;

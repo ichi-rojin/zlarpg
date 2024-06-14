@@ -50,6 +50,9 @@ public class MapManager : MonoBehaviour
 
     private Vector2 _mapCenterPos;
 
+    //原点を左上とする
+    private Vector2 _origin;
+
     private void Start()
     {
         string textLines = textFile.text; // テキストの全体データの代入
@@ -72,6 +75,7 @@ public class MapManager : MonoBehaviour
     {
         _tileSize = _groundPrefab.GetComponent<Renderer>().bounds.size.x; //タイルサイズ取得
         _mapCenterPos = new Vector2(_colLength / 2 * _tileSize, (_rowLength / 2 + 1) * _tileSize);
+        _origin = new Vector2(_colLength * _tileSize / 2, _rowLength * _tileSize / 2);
         if (_colLength % 2 == 0) _mapCenterPos.x -= _tileSize / 2;
         if (_rowLength % 2 == 0) _mapCenterPos.y -= _tileSize / 2;
 
@@ -101,7 +105,7 @@ public class MapManager : MonoBehaviour
                         break;
                 }
                 var map = mapTip.GetComponent<Map>();
-                map.SetPos(new Vector2Int(x, y));
+                map.SetPos(x, y);
                 _mapTips[x, y] = mapTip;
             }
         }
@@ -111,6 +115,21 @@ public class MapManager : MonoBehaviour
     public Vector2 GetWorldPositionFromTile(int x, int y)
     {
         return new Vector2(x * _tileSize, (_rowLength - y) * _tileSize) - _mapCenterPos;
+    }
+
+    public Vector2Int GetPosByCoord(float x, float y)
+    {
+        var posX = (x + _origin.x) / tileSize;
+        var posY = (-y + _origin.y) / tileSize;
+        return new Vector2Int(
+            (int)posX,
+            (int)posY
+        );
+    }
+
+    public Vector2Int GetPosByCoord(Vector2 pos)
+    {
+        return GetPosByCoord(pos.x, pos.y);
     }
 
     public Vector2Int GetTilePosFromWorldPosition(float x, float y)
