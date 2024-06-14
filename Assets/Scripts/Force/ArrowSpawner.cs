@@ -8,6 +8,6 @@ public class ArrowSpawner : BaseForceSpawner
     {
         //if (_forces.Count >= _stats.SpawnCount) return;
         Arrow force = (Arrow)CreateForce(coord, target, _forcesParent.transform);
-        force.target = target;
+        force._target = target;
     }
 }

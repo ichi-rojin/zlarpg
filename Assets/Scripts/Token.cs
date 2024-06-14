@@ -4,9 +4,10 @@ using DG.Tweening;
 
 public class Token : MonoBehaviour
 {
-    private Transform _transform;
-    private GameObject _managers;
+    internal Transform _transform;
+    internal GameObject _managers;
     internal MapManager _mapManager;
+    internal float _tileSize; //タイルサイズ
 
     [SerializeField]
     [Header("ユニークID")]
@@ -40,6 +41,7 @@ public class Token : MonoBehaviour
 
         _managers = GameObject.Find("Managers");
         _mapManager = _managers.GetComponent<MapManager>();
+        _tileSize = _mapManager.tileSize;
         _transform = this.gameObject.transform;
     }
 
