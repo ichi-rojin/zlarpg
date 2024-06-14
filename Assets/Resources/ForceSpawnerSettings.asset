@@ -19,7 +19,7 @@ MonoBehaviour:
     Name: "\u77E2"
     Description: 
     Physical: 3
-    Speed: 20
+    Speed: 50
     Range: 10
     SpawnCount: 1
     AliveTime: 3.5

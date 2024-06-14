@@ -5,6 +5,7 @@ using DG.Tweening;
 public class Token : MonoBehaviour
 {
     internal Transform _transform;
+    internal GameObject _characters;
     internal GameObject _managers;
     internal MapManager _mapManager;
     internal float _tileSize; //タイルサイズ
@@ -45,6 +46,7 @@ public class Token : MonoBehaviour
         Guid guid = Guid.NewGuid();
         _uuid = guid.ToString();
 
+        _characters = GameObject.Find("Characters");
         _managers = GameObject.Find("Managers");
         _mapManager = _managers.GetComponent<MapManager>();
         _tileSize = _mapManager.tileSize;
@@ -56,7 +58,9 @@ public class Token : MonoBehaviour
         _transform.DOMove(
             coord,
             duration
-        ).SetEase(Ease.Linear);
+        )
+            .SetEase(Ease.Linear)
+            .SetLink(this.gameObject);
 
         SetPos(p);
     }

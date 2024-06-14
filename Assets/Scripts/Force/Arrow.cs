@@ -32,8 +32,13 @@ public class Arrow : BaseForce
         _transform.DOMove(
             coord,
             _duration
-        ).SetEase(Ease.Linear);
+        )
+            .SetEase(Ease.Linear)
+            .SetLink(this.gameObject);
         yield return new WaitForSeconds(_duration);
+
+        SetPos(_mapManager.GetPosByCoord(_transform.position));
+        CheckAttack();
 
         if (CheckLifespan())
         {
@@ -42,5 +47,27 @@ public class Arrow : BaseForce
         }
         StartCoroutine("Exec");
         yield break;
+    }
+
+    private int GetAtk()
+    {
+        var pow = _stats[ForceType.Physical];
+        var spd = _stats[ForceType.Speed] / 10;
+        return pow * spd;
+    }
+
+    private void CheckAttack()
+    {
+        List<Character> charas = new List<Character>();
+        _characters.GetComponentsInChildren(charas);
+        foreach (var chara in charas)
+        {
+            if (chara.pos == pos)
+            {
+                var atk = GetAtk();
+                AttackTarget(atk, chara);
+                Vanish();
+            }
+        }
     }
 }

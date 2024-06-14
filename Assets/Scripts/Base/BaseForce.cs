@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class BaseForce : Token
@@ -16,17 +17,13 @@ public class BaseForce : Token
 
     protected float _angle;
     protected float _duration;
+    protected Tweener _tweener;
 
     public void Init(BaseForceSpawner spawner, Vector2Int forward)
     {
         _spawner = spawner;
         _stats = (ForceSpawnerStats)spawner._stats.GetCopy();
         _forward = forward;
-    }
-
-    private void Update()
-    {
-        SetPos(_mapManager.GetPosByCoord(_transform.position));
     }
 
     protected void AttackTarget(int attack, Character target)
