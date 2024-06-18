@@ -9,15 +9,19 @@ public class BaseForceSpawner : MonoBehaviour
     public Token _parentToken;
     protected GameObject _forcesParent;
     public ForceSpawnerStats _stats;
+    internal MapManager _mapManager;
+    private Character _character;
 
     // 生成タイマー
     protected float _spawnTimer;
 
     protected List<BaseForce> _forces;
 
-    public void Init(ForceSpawnerStats stats)
+    public virtual void Init(ForceSpawnerStats stats)
     {
         _parent = transform.parent.gameObject;
+        _character = _parent.GetComponent<Character>();
+        _mapManager = _character._mapManager;
         _parentToken = _parent.GetComponent<Token>();
         _forcesParent = GameObject.Find("Forces");
         _forces = new List<BaseForce>();
