@@ -15,7 +15,7 @@ MonoBehaviour:
   datas:
   - Title: "\u4EBA\u9593"
     Id: 0
-    Lv: 0
+    Lv: 1
     Name: "\u4EBA\u9593"
     Description: 
     Hp: 100

@@ -10,7 +10,8 @@ public class ArrowSpawner : BaseForceSpawner
         var duration = _mapManager.CalcDurationBySpeed(_stats[ForceType.Speed]);
         _stats.Range = (int)(_stats.AliveTime / duration);
     }
-    public void Action(Vector2 coord, Character target)
+
+    public override void Action(Vector2 coord, Character target)
     {
         //if (_forces.Count >= _stats.SpawnCount) return;
         Arrow force = (Arrow)CreateForce(coord, target, _forcesParent.transform);

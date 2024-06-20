@@ -43,4 +43,8 @@ public class BaseForceSpawner : MonoBehaviour
     {
         return CreateForce(coord, Vector2Int.zero, target, parent);
     }
+
+    public virtual void Action(Vector2 coord, Character target)
+    {
+    }
 }

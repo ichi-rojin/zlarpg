@@ -595,7 +595,7 @@ public class CharacterAI : MonoBehaviour
         var spawners = _character.forceSpawners;
         foreach (var gameObj in spawners)
         {
-            var spawner = gameObj.GetComponent<ArrowSpawner>();
+            var spawner = gameObj.GetComponent<BaseForceSpawner>();
             var pos = _character.pos;
             var coord = _mapManager.GetWorldPositionFromTile(pos.x, pos.y);
             spawner.Action(coord, _targetEnemy);
