@@ -355,13 +355,12 @@ public class CharacterAI : MonoBehaviour
     private void SetTactics()
     {
         _targetEnemy = _enemies.GetRandom();
-        var diff = _targetEnemy.pos - _character.pos;
-        Debug.Log(_targetEnemy.pos);
-        Debug.Log(_character.pos);
-        Debug.Log(diff);
-        Debug.Log(Math.Max(diff.x, diff.y));
+        var distant = (_targetEnemy.pos - _character.pos).magnitude;
+        Debug.Log(distant);
+        //yTODOzdistant‚Éˆê”Ô‹ß‚¢forceSpawner‚ğæ“¾
         Debug.Log(_character.forceSpawners[0].stats.Range);
-        Debug.Log("====================");
+        //yTODOzdistantˆÈãƒ^[ƒQƒbƒg‚Æ—£‚ê‚Ä‚¢‚éê‡‚ÌˆÚ“®ˆ—
+        //yTODOz‘Šè‚æ‚èË’ö‚ª—D‚Á‚Ä‚¢‚éê‡‚Ì‰ñ”ğˆ—
     }
 
     private float CalcDurationByThroughput()
