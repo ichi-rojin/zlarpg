@@ -22,7 +22,7 @@ public class BaseForce : Token
     public void Init(BaseForceSpawner spawner, Vector2Int forward)
     {
         _spawner = spawner;
-        _stats = (ForceSpawnerStats)spawner._stats.GetCopy();
+        _stats = (ForceSpawnerStats)spawner.stats.GetCopy();
         _forward = forward;
     }
 

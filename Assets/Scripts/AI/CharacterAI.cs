@@ -354,8 +354,14 @@ public class CharacterAI : MonoBehaviour
 
     private void SetTactics()
     {
-        //ÅyTODOÅzêÌèpåàíË
         _targetEnemy = _enemies.GetRandom();
+        var diff = _targetEnemy.pos - _character.pos;
+        Debug.Log(_targetEnemy.pos);
+        Debug.Log(_character.pos);
+        Debug.Log(diff);
+        Debug.Log(Math.Max(diff.x, diff.y));
+        Debug.Log(_character.forceSpawners[0].stats.Range);
+        Debug.Log("====================");
     }
 
     private float CalcDurationByThroughput()

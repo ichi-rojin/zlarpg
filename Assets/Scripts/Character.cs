@@ -112,7 +112,7 @@ public class Character : Token
     private void AddForceSpawner(int id)
     {
         //yTODOz‘•”õÏ‚Ý‚È‚çƒŒƒxƒ‹ƒAƒbƒv
-        BaseForceSpawner spawner = _forceSpawners.Find(force => force._stats.Id == id);
+        BaseForceSpawner spawner = _forceSpawners.Find(force => force.stats.Id == id);
 
         if (spawner) return;
 

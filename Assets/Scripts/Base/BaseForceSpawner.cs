@@ -8,7 +8,13 @@ public class BaseForceSpawner : MonoBehaviour
     public GameObject _parent;
     public Token _parentToken;
     protected GameObject _forcesParent;
-    public ForceSpawnerStats _stats;
+    protected ForceSpawnerStats _stats;
+
+    public ForceSpawnerStats stats
+    {
+        get { return _stats; }
+    }
+
     internal MapManager _mapManager;
     private Character _character;
 
