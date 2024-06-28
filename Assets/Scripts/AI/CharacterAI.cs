@@ -13,6 +13,7 @@ public class CharacterAI : MonoBehaviour
         Walk, // 移動中.
         Find, // 発見.
         Battle, // 戦闘中.
+        BattleMove, // 戦闘中.
         Escape, // 逃走中は敵を検索せずに脅威マップに従って逃走する。
     }
 
@@ -22,6 +23,11 @@ public class CharacterAI : MonoBehaviour
     private Character _character;
 
     private List<Vector2Int> _route;
+
+    public List<Vector2Int> route
+    {
+        get { return _route; }
+    }
 
     private GameObject _managers;
     private GameObject _itemsParent;//アイテムの親ゲームオブジェクト
@@ -61,6 +67,13 @@ public class CharacterAI : MonoBehaviour
     private Item _target = null;
 
     private Character _targetEnemy = null;
+
+    [SerializeField]
+    private BaseForceSpawner _selectedForceSpawner = null;
+
+    private IEnumerator TacticsEra = null;
+    private IEnumerator BattleEra = null;
+    private IEnumerator BattleMoveEra = null;
 
     // Start is called before the first frame update
     private IEnumerator Start()
@@ -352,17 +365,6 @@ public class CharacterAI : MonoBehaviour
         }
     }
 
-    private void SetTactics()
-    {
-        _targetEnemy = _enemies.GetRandom();
-        var distant = (_targetEnemy.pos - _character.pos).magnitude;
-        Debug.Log(distant);
-        //【TODO】distantに一番近いforceSpawnerを取得
-        Debug.Log(_character.forceSpawners[0].stats.Range);
-        //【TODO】distant以上ターゲットと離れている場合の移動処理
-        //【TODO】相手より射程が優っている場合の回避処理
-    }
-
     private float CalcDurationByThroughput()
     {
         float throughput = _character.stats[StatsType.Throughput];
@@ -372,34 +374,81 @@ public class CharacterAI : MonoBehaviour
         return 0.5f + normalize * 4;
     }
 
-    private void ControlsBattleAction(bool status)
+    private void SetTactics()
     {
-        if (status == true)
+        //【TODO】戦術的に_targetEnemyを選ぶ
+        _targetEnemy = _enemies.GetRandom();
+
+        var diff = (_targetEnemy.pos - _character.pos);
+        var distant = Math.Sqrt(diff.sqrMagnitude);
+        var maxRange = 0;
+        // distantに一番近いforceSpawnerを取得
+        foreach (BaseForceSpawner spawner in _character.forceSpawners)
         {
-            StartCoroutine("Battle");
-            StartCoroutine("Tactics");
+            var range = spawner.stats.Range;
+            if (distant > range) continue;// 射程外
+            if (range > maxRange)
+            {
+                maxRange = range;
+                _selectedForceSpawner = spawner;
+            }
         }
-        else
+
+        //【TODO】distant以上ターゲットと離れている場合の移動処理
+        //【TODO】相手より射程が優っている場合の回避処理
+    }
+
+    //攻撃
+    public void Attack()
+    {
+        if (_selectedForceSpawner == null) return;
+        var pos = _character.pos;
+        var coord = _mapManager.GetWorldPositionFromTile(pos.x, pos.y);
+        _selectedForceSpawner.Action(coord, _targetEnemy);
+    }
+
+    //戦闘移動
+    private IEnumerator BattleMove()
+    {
+        float duration = _mapManager.CalcDurationBySpeed(_character.stats[StatsType.Speed]);
+        var i = 0;
+        foreach (var p in _route)
         {
-            StopCoroutine("Battle");
-            StopCoroutine("Tactics");
+            SetOrientation(_character.pos, p);
+            CreateSenseArea();
+
+            _character.MovePosition(p, duration);
+            yield return new WaitForSeconds(duration);
+            i++;
         }
+        StartCoroutine(TacticsEra);
+        Debug.Log("BattleMoveEnd");
+        yield break;
     }
 
     private IEnumerator Tactics()
     {
+        Debug.Log("Tactics");
         //戦術決定
         SetTactics();
-
-        //移動
 
         //行動
         Attack();
 
+        //移動
+        if (_selectedForceSpawner == null)
+        {
+            _state = eState.BattleMove;
+            Debug.Log("BattleMove");
+            SetRoute(_targetEnemy.pos, _costMap);
+            BattleMoveEra = BattleMove();
+            StartCoroutine(BattleMoveEra);
+            StopCoroutine(TacticsEra);
+            Debug.Log("BattleMoveEnd2");
+        }
+
         float duration = CalcDurationByThroughput();
         yield return new WaitForSeconds(duration);
-        StartCoroutine("Tactics");
-        yield break;
     }
 
     private IEnumerator Battle()
@@ -410,7 +459,13 @@ public class CharacterAI : MonoBehaviour
         if (_enemies.Count < 1)
         {
             TransitionStatusFromBattle();
-            ControlsBattleAction(false);
+
+            _selectedForceSpawner = null;
+            StopCoroutine(BattleEra);
+            BattleEra = null;
+            StopCoroutine(TacticsEra);
+            TacticsEra = null;
+
             StartCoroutine("Move");
             yield break;
         }
@@ -419,15 +474,20 @@ public class CharacterAI : MonoBehaviour
         if (_spirit <= 0)
         {
             _state = eState.Escape;
-            ControlsBattleAction(false);
-            StartCoroutine("Escape");
+
+            _selectedForceSpawner = null;
+            StopCoroutine(BattleEra);
+            BattleEra = null;
+            StopCoroutine(TacticsEra);
+            TacticsEra = null;
+
+            Escape();
             yield break;
         }
 
         yield return new WaitForSeconds(0.1f);
-
-        StartCoroutine("Battle");
-        yield break;
+        BattleEra = Battle();
+        StartCoroutine(BattleEra);
     }
 
     private int GetForecastSense(Character chara)
@@ -450,7 +510,7 @@ public class CharacterAI : MonoBehaviour
         return map;
     }
 
-    private IEnumerator Escape()
+    private void Escape()
     {
         _influenceMap.Fill(0);//脅威マップ初期化
         foreach (var chara in _enemies)
@@ -481,7 +541,6 @@ public class CharacterAI : MonoBehaviour
             cnt++;
         }
         StartCoroutine("Move");
-        yield break;
     }
 
     private IEnumerator Move()
@@ -545,7 +604,10 @@ public class CharacterAI : MonoBehaviour
                 if (_state == eState.Battle)
                 {
                     _spirit = 100;
-                    ControlsBattleAction(true);
+                    BattleEra = Battle();
+                    TacticsEra = Tactics();
+                    StartCoroutine(BattleEra);
+                    StartCoroutine(TacticsEra);
                     yield break;
                 }
                 //知覚エリア内のターゲットを検索
@@ -592,19 +654,6 @@ public class CharacterAI : MonoBehaviour
         }
         target.Vanish();
         _findMap[target.pos.x, target.pos.y] = 0;//記憶から削除
-    }
-
-    //攻撃
-    public void Attack()
-    {
-        var spawners = _character.forceSpawners;
-        foreach (var gameObj in spawners)
-        {
-            var spawner = gameObj.GetComponent<BaseForceSpawner>();
-            var pos = _character.pos;
-            var coord = _mapManager.GetWorldPositionFromTile(pos.x, pos.y);
-            spawner.Action(coord, _targetEnemy);
-        }
     }
 
     //再度思考

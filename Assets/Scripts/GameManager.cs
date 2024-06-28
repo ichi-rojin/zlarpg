@@ -41,6 +41,7 @@ public class GameManager : MonoBehaviour
         ResetAreaColor();
         ShowSensedArea();
         ShowInfluenceArea();
+        ShowRoute();
     }
 
     private void ResetAreaColor()
@@ -110,6 +111,38 @@ public class GameManager : MonoBehaviour
                 if (senses.Contains(p))
                 {
                     mapSpRdr.color = new Color(0f, 255f, 255f);
+                }
+            }
+        }
+    }
+
+    private void ShowRoute()
+    {
+        GameObject[,] mapTips = _mapManager.mapTips;
+        List<Vector2Int> coords = new List<Vector2Int>();
+
+        List<CharacterAI> charas = new List<CharacterAI>();
+        _charactersParent.GetComponentsInChildren(charas);
+        foreach (var chara in charas)
+        {
+            var route = chara.GetComponent<CharacterAI>().route;
+            if (route == null) continue;
+            foreach (var p in route)
+            {
+                coords.Add(p);
+            }
+        }
+
+        for (var d1 = 0; d1 < mapTips.GetLength(0); d1++)
+        {
+            for (var d2 = 0; d2 < mapTips.GetLength(1); d2++)
+            {
+                var p = new Vector2Int(d1, d2);
+                var findedMapTip = _mapManager.GetMapTip(p);
+                var mapSpRdr = findedMapTip.GetComponent<SpriteRenderer>();
+                if (coords.Contains(p))
+                {
+                    mapSpRdr.color = new Color(255f, 0f, 0f);
                 }
             }
         }
