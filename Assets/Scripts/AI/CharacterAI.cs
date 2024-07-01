@@ -378,6 +378,7 @@ public class CharacterAI : MonoBehaviour
     {
         //yTODOzíp“I‚É_targetEnemy‚ğ‘I‚Ô
         _targetEnemy = _enemies.GetRandom();
+        if (_targetEnemy == null) return;
 
         var diff = (_targetEnemy.pos - _character.pos);
         var distant = Math.Sqrt(diff.sqrMagnitude);
@@ -411,24 +412,26 @@ public class CharacterAI : MonoBehaviour
     private IEnumerator BattleMove()
     {
         float duration = _mapManager.CalcDurationBySpeed(_character.stats[StatsType.Speed]);
-        var i = 0;
-        foreach (var p in _route)
-        {
-            SetOrientation(_character.pos, p);
-            CreateSenseArea();
 
-            _character.MovePosition(p, duration);
-            yield return new WaitForSeconds(duration);
-            i++;
-        }
-        StartCoroutine(TacticsEra);
-        Debug.Log("BattleMoveEnd");
-        yield break;
+        var combedInflCostMaps = GetCombedInflCostMaps();
+        var pos = _character.pos;
+        var movableList = new List<Vector2Int> {
+            pos + Vector2Int.left,
+            pos + Vector2Int.up,
+            pos + Vector2Int.right,
+            pos + Vector2Int.down,
+        }.FindAll(el => combedInflCostMaps[el.x, el.y] > 0);
+        //yTODOzƒ‰ƒ“ƒ_ƒ€‚Å‚Í‚È‚­í—ª“I‚É
+        var nextPos = movableList.GetRandom();
+        SetOrientation(_character.pos, nextPos);
+        CreateSenseArea();
+
+        _character.MovePosition(nextPos, duration);
+        yield return new WaitForSeconds(duration);
     }
 
     private IEnumerator Tactics()
     {
-        Debug.Log("Tactics");
         //ípŒˆ’è
         SetTactics();
 
@@ -436,19 +439,22 @@ public class CharacterAI : MonoBehaviour
         Attack();
 
         //ˆÚ“®
-        if (_selectedForceSpawner == null)
+        if (
+            _selectedForceSpawner == null
+            ||
+            new System.Random().Next(11) <= 2
+        )
         {
             _state = eState.BattleMove;
-            Debug.Log("BattleMove");
-            SetRoute(_targetEnemy.pos, _costMap);
             BattleMoveEra = BattleMove();
-            StartCoroutine(BattleMoveEra);
-            StopCoroutine(TacticsEra);
-            Debug.Log("BattleMoveEnd2");
+            yield return StartCoroutine(BattleMoveEra);
+            TacticsEra = Tactics();
+            StartCoroutine(TacticsEra);
         }
-
         float duration = CalcDurationByThroughput();
         yield return new WaitForSeconds(duration);
+        TacticsEra = Tactics();
+        StartCoroutine(TacticsEra);
     }
 
     private IEnumerator Battle()

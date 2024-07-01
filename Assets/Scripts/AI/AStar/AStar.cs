@@ -276,7 +276,7 @@ public static class AStar
     }
 
     //探索する
-    public static List<Vector2Int> Serch(Vector2Int startPos, Vector2Int endPos, int[,] layer)
+    public static List<Vector2Int> Serch(Vector2Int startPos, Vector2Int endPos, int[,] layer, int max = 100)
     {
         List<Vector2Int> pList = new List<Vector2Int>();
         // A-star実行.
@@ -291,7 +291,7 @@ public static class AStar
 
             // 試行回数。100回超えたら強制中断
             int cnt = 0;
-            while (cnt < 100)
+            while (cnt < max)
             {
                 mgr.RemoveOpenList(node);
                 // 周囲を開く
@@ -317,6 +317,7 @@ public static class AStar
                     pList.Reverse();
                     break;
                 }
+                cnt++;
             }
         }
 
