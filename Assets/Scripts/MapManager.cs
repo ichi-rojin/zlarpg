@@ -206,20 +206,6 @@ public class MapManager : MonoBehaviour
     )
     {
         List<Vector2Int> SightList = new List<Vector2Int>();
-        if (horizontal)
-        {
-            if (end.y < 0)
-            {
-                return SightList;
-            }
-        }
-        else
-        {
-            if (end.x < 0)
-            {
-                return SightList;
-            }
-        }
         int step = 1;
         Vector2 d = end - start;
         float t = d.x != 0 ? d.x / d.y : 0;
