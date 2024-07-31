@@ -14,6 +14,8 @@ public class ArrowSpawner : BaseForceSpawner
     public override void Action(Vector2 coord, Character target)
     {
         //if (_forces.Count >= _stats.SpawnCount) return;
+        if (_coolTime > 0) return;
+        _coolTime = 100;
         Arrow force = (Arrow)CreateForce(coord, target, _forcesParent.transform);
         force._target = target;
     }

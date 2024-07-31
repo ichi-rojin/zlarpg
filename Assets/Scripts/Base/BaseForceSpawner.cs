@@ -18,10 +18,22 @@ public class BaseForceSpawner : MonoBehaviour
     internal MapManager _mapManager;
     private Character _character;
 
-    // 生成タイマー
-    protected float _spawnTimer;
+    [SerializeField]
+    [Header("クールタイム")]
+    protected int _coolTime;
 
     protected List<BaseForce> _forces;
+
+    private void FixedUpdate()
+    {
+        decreaseCooltime();
+    }
+
+    private void decreaseCooltime()
+    {
+        if (_coolTime <= 0) return;
+        _coolTime -= 1;
+    }
 
     public virtual void Init(ForceSpawnerStats stats)
     {
