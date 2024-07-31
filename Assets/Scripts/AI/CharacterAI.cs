@@ -432,6 +432,12 @@ public class CharacterAI : MonoBehaviour
 
     private IEnumerator Tactics()
     {
+        // 敵存在チェック
+        if (_enemies.Count < 1)
+        {
+            StopCoroutine(TacticsEra);
+            yield break;
+        }
         //戦術決定
         SetTactics();
 
