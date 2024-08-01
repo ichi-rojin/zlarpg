@@ -62,6 +62,7 @@ public class Arrow : BaseForce
         _characters.GetComponentsInChildren(charas);
         foreach (var chara in charas)
         {
+            if (chara.uuid == _spawner.character.uuid) continue;
             if (chara.pos == pos)
             {
                 var atk = GetAtk();

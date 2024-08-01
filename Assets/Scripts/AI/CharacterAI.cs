@@ -135,9 +135,8 @@ public class CharacterAI : MonoBehaviour
         return _mapManager.GetRandomCoord();
     }
 
-    private void SetOrientation(Vector2Int prev, Vector2Int next)
+    private void SetOrientation(Vector2Int forward)
     {
-        Vector2Int forward = prev - next;
         if (forward == Vector2Int.left)
         {
             _character.SetOrientation(Character.eOrientation.East);
@@ -154,6 +153,38 @@ public class CharacterAI : MonoBehaviour
         {
             _character.SetOrientation(Character.eOrientation.South);
         }
+    }
+
+    private void SetOrientation(Vector2 forward)
+    {
+        if (Math.Abs(forward.x) >= Math.Abs(forward.y))
+        {
+            if (forward.x >= 0)
+            {
+                SetOrientation(Vector2Int.right);
+            }
+            else
+            {
+                SetOrientation(Vector2Int.left);
+            }
+        }
+        else
+        {
+            if (forward.y >= 0)
+            {
+                SetOrientation(Vector2Int.up);
+            }
+            else
+            {
+                SetOrientation(Vector2Int.down);
+            }
+        }
+    }
+
+    private void SetOrientation(Vector2Int prev, Vector2Int next)
+    {
+        Vector2Int forward = prev - next;
+        SetOrientation(forward);
     }
 
     private void SetRoute(Vector2Int destination, int[,] map)
@@ -423,7 +454,18 @@ public class CharacterAI : MonoBehaviour
         }.FindAll(el => combedInflCostMaps[el.x, el.y] > 0);
         //yTODOzƒ‰ƒ“ƒ_ƒ€‚Å‚Í‚È‚­í—ª“I‚É
         var nextPos = movableList.GetRandom();
-        SetOrientation(_character.pos, nextPos);
+
+        Vector2Int dir;
+        if (_targetEnemy == null)
+        {
+            dir = nextPos;
+        }
+        else
+        {
+            dir = _targetEnemy.pos;
+        }
+        Vector2 forward = _character.pos - dir;
+        SetOrientation(forward);
         CreateSenseArea();
 
         _character.MovePosition(nextPos, duration);
@@ -444,19 +486,6 @@ public class CharacterAI : MonoBehaviour
         //s“®
         Attack();
 
-        //ˆÚ“®
-        if (
-            _selectedForceSpawner == null
-            ||
-            new System.Random().Next(11) <= 2
-        )
-        {
-            _state = eState.BattleMove;
-            BattleMoveEra = BattleMove();
-            yield return StartCoroutine(BattleMoveEra);
-            TacticsEra = Tactics();
-            StartCoroutine(TacticsEra);
-        }
         float duration = CalcDurationByThroughput();
         yield return new WaitForSeconds(duration);
         TacticsEra = Tactics();
@@ -497,7 +526,18 @@ public class CharacterAI : MonoBehaviour
             yield break;
         }
 
-        yield return new WaitForSeconds(0.1f);
+        //ˆÚ“®
+        if (
+            _selectedForceSpawner == null
+            ||
+            new System.Random().Next(6) <= 5
+        )
+        {
+            _state = eState.BattleMove;
+            BattleMoveEra = BattleMove();
+            yield return StartCoroutine(BattleMoveEra);
+        }
+
         BattleEra = Battle();
         StartCoroutine(BattleEra);
     }

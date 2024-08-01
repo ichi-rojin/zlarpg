@@ -18,6 +18,11 @@ public class BaseForceSpawner : MonoBehaviour
     internal MapManager _mapManager;
     private Character _character;
 
+    public Character character
+    {
+        get { return _character; }
+    }
+
     [SerializeField]
     [Header("クールタイム")]
     protected int _coolTime;

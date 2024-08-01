@@ -19,7 +19,7 @@ MonoBehaviour:
     Name: "\u4EBA\u9593"
     Description: 
     Hp: 100
-    Sense: 20
+    Sense: 6
     Strength: 3
     Speed: 30
     Jump: 1
