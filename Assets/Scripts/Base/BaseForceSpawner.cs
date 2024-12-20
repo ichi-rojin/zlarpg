@@ -8,6 +8,7 @@ public class BaseForceSpawner : MonoBehaviour
     public GameObject _parent;
     public Token _parentToken;
     protected GameObject _forcesParent;
+    [SerializeField]
     protected ForceSpawnerStats _stats;
 
     public ForceSpawnerStats stats

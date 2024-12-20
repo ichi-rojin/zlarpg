@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Linq;
+using static UnityEditor.PlayerSettings;
 
 public class CharacterAI : MonoBehaviour
 {
@@ -411,8 +412,7 @@ public class CharacterAI : MonoBehaviour
         _targetEnemy = _enemies.GetRandom();
         if (_targetEnemy == null) return;
 
-        var diff = (_targetEnemy.pos - _character.pos);
-        var distant = Math.Sqrt(diff.sqrMagnitude);
+        var distant = Vector2.Distance(_character.pos, _targetEnemy.pos);
         var maxRange = 0;
         // distant‚Éˆê”Ô‹ß‚¢forceSpawner‚ðŽæ“¾
         foreach (BaseForceSpawner spawner in _character.forceSpawners)
@@ -447,13 +447,40 @@ public class CharacterAI : MonoBehaviour
         var combedInflCostMaps = GetCombedInflCostMaps();
         var pos = _character.pos;
         var movableList = new List<Vector2Int> {
+            pos,
             pos + Vector2Int.left,
             pos + Vector2Int.up,
             pos + Vector2Int.right,
             pos + Vector2Int.down,
         }.FindAll(el => combedInflCostMaps[el.x, el.y] > 0);
-        //yTODOzƒ‰ƒ“ƒ_ƒ€‚Å‚Í‚È‚­í—ª“I‚É
-        var nextPos = movableList.GetRandom();
+        //ŽË’ö•t‹ß‚ÉˆÚ“®‚·‚é
+        Vector2Int nextPos;
+        float range = 0;
+        if (_selectedForceSpawner)
+        {
+            range = _selectedForceSpawner.stats.Range;
+        } else
+        {
+            if (_character.forceSpawners != null)
+            {
+                range = _character.forceSpawners.OrderBy(v =>
+                {
+                    return v.stats.Range;
+                }).Take(1).First().stats.Range;
+            }
+        }
+        if (_targetEnemy)
+        {
+            var nearestList = movableList.OrderBy(v =>
+            {
+                var distant = Vector2.Distance(v, _targetEnemy.pos);
+                return Mathf.Abs(range - distant);
+            }).Take(3);
+            nextPos = nearestList.GetRandom();
+        } else
+        {
+            nextPos = movableList.GetRandom();
+        }
 
         Vector2Int dir;
         if (_targetEnemy == null)
@@ -655,7 +682,7 @@ public class CharacterAI : MonoBehaviour
                 FindCharas();
                 if (_state == eState.Battle)
                 {
-                    _spirit = 100;
+                    _spirit = 200;
                     BattleEra = Battle();
                     TacticsEra = Tactics();
                     StartCoroutine(BattleEra);

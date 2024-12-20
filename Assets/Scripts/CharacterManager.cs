@@ -4,7 +4,7 @@ using UnityEngine;
 [DefaultExecutionOrder(1)]
 public class CharacterManager : MonoBehaviour
 {
-    private const int SPAWN_NUMBER = 2;//Charaのスポーン数
+    private const int SPAWN_NUMBER = 8;//Charaのスポーン数
 
     [SerializeField]
     private GameObject _characterPrefab; //各種プレファブ
