@@ -45,7 +45,7 @@ public class BaseForceSpawner : MonoBehaviour
     {
         _parent = transform.parent.gameObject;
         _character = _parent.GetComponent<Character>();
-        _mapManager = _character._mapManager;
+        _mapManager = GameObject.Find("Managers").GetComponent<MapManager>();
         _parentToken = _parent.GetComponent<Token>();
         _forcesParent = GameObject.Find("Forces");
         _forces = new List<BaseForce>();

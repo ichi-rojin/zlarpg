@@ -27,6 +27,7 @@ public class Arrow : BaseForce
         {
             yield break;
         }
+        CheckObstruction();
         var n = Quaternion.Euler(0, 0, _angle) * new Vector2(0, _tileSize);
         var coord = transform.position - n;
         _transform.DOMove(

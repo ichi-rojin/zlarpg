@@ -76,6 +76,12 @@ public class BaseForce : Token
         return degree;
     }
 
+    protected void CheckObstruction()
+    {
+        if (_spawner._mapManager.map[pos.x, pos.y].ToString() == "g") return;
+        Vanish();
+    }
+
     protected void SetAngle()
     {
         _angle = GetAngle();
