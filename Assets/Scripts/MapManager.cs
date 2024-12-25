@@ -193,7 +193,7 @@ public class MapManager : MonoBehaviour
 
     public float CalcDurationBySpeed(int speed)
     {
-        return _tileSize / 100 / 4 * (6.0f - (float)speed / 10);
+        return _tileSize / (float)speed / 4.5f;
     }
 
     //‹ü
