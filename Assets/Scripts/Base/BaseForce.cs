@@ -73,7 +73,7 @@ public class BaseForce : Token
             degree += 360;
         }
 
-        return degree;
+        return -1 * degree;
     }
 
     protected void CheckObstruction()

@@ -26,6 +26,6 @@ MonoBehaviour:
     Throughput: 10
     Memory: 5
     Prefab: {fileID: 1883682531497913629, guid: 8e2cf664ca75049488f68303f03acf64, type: 3}
-    DefaultForceIds: 00000000
+    DefaultForceIds: 0000000001000000
     UsableForceIds: 00000000010000000200000003000000040000000500000006000000070000000800000009000000
     UsableForceMax: 10
