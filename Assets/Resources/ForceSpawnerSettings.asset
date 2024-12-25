@@ -20,7 +20,7 @@ MonoBehaviour:
     Description: 
     Physical: 3
     Speed: 40
-    Range: 0
+    Range: 6
     SpawnCount: 1
     AliveTime: 1
     Prefab: {fileID: 2271396579465896647, guid: eb5ea995007c9254c811bf7708bef1f3, type: 3}

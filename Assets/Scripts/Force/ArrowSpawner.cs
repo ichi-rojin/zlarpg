@@ -7,8 +7,6 @@ public class ArrowSpawner : BaseForceSpawner
     public override void Init(ForceSpawnerStats stats)
     {
         base.Init(stats);
-        var duration = _mapManager.CalcDurationBySpeed(_stats[ForceType.Speed]);
-        _stats.Range = (int)(_stats.AliveTime / duration);
     }
 
     public override void Action(Vector2 coord, Character target)
@@ -16,6 +14,8 @@ public class ArrowSpawner : BaseForceSpawner
         //if (_forces.Count >= _stats.SpawnCount) return;
         if (_coolTime > 0) return;
         _coolTime = 100;
+        var duration = _mapManager.CalcDurationBySpeed(_stats[ForceType.Speed]);
+        _stats.AliveTime = _stats[ForceType.Range] * duration;
         Arrow force = (Arrow)CreateForce(coord, target, _forcesParent.transform);
         force._target = target;
     }
