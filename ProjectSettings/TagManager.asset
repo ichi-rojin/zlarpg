@@ -2,7 +2,7 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
+  serializedVersion: 3
   tags: []
   layers:
   - Default
@@ -50,3 +50,8 @@ TagManager:
   - name: Character
     uniqueID: 3387289903
     locked: 0
+  - name: Force
+    uniqueID: 2903965299
+    locked: 0
+  m_RenderingLayers:
+  - Default
