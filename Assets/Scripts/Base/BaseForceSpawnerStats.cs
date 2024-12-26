@@ -12,6 +12,7 @@ public class BaseForceSpawnerStats
     public int Physical;
     public int Speed;
     public int Range;
+    public float StopTime;
     public int SpawnCount;
     public float AliveTime;
 

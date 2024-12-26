@@ -21,6 +21,7 @@ MonoBehaviour:
     Physical: 15
     Speed: 40
     Range: 1
+    StopTime: 0.8
     SpawnCount: 1
     AliveTime: 0
     Prefab: {fileID: 2271396579465896647, guid: a8aea4ac2645e8e40a4554bc5bf6846e, type: 3}
@@ -32,6 +33,7 @@ MonoBehaviour:
     Physical: 3
     Speed: 40
     Range: 6
+    StopTime: 1.5
     SpawnCount: 1
     AliveTime: 0
     Prefab: {fileID: 2271396579465896647, guid: eb5ea995007c9254c811bf7708bef1f3, type: 3}
