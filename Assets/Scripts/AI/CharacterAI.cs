@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 using static UnityEditor.PlayerSettings;
+using static Unity.VisualScripting.Member;
 
 public class CharacterAI : MonoBehaviour
 {
@@ -406,6 +407,15 @@ public class CharacterAI : MonoBehaviour
         return 0.5f + normalize * 4;
     }
 
+    private BaseForceSpawner getNearestSpawer(List<BaseForceSpawner> forceSpawners, float distant)
+    {
+        //目的の値との差の絶対値が最小の値を計算
+        var min = forceSpawners.Min(el => Mathf.Abs(el.stats.Range - distant));
+
+        //絶対値が最小の値だった物を最も近い値として返す
+        return forceSpawners.First(el => Mathf.Abs(el.stats.Range - distant) == min);
+    }
+
     private void SetTactics()
     {
         //【TODO】戦術的に_targetEnemyを選ぶ
@@ -413,18 +423,7 @@ public class CharacterAI : MonoBehaviour
         if (_targetEnemy == null) return;
 
         var distant = Vector2.Distance(_character.pos, _targetEnemy.pos);
-        var maxRange = 0;
-        // distantに一番近いforceSpawnerを取得
-        foreach (BaseForceSpawner spawner in _character.forceSpawners)
-        {
-            var range = spawner.stats.Range;
-            if (distant > range) continue;// 射程外
-            if (range > maxRange)
-            {
-                maxRange = range;
-                _selectedForceSpawner = spawner;
-            }
-        }
+        _selectedForceSpawner = getNearestSpawer(_character.forceSpawners, distant);
 
         //【TODO】distant以上ターゲットと離れている場合の移動処理
         //【TODO】相手より射程が優っている場合の回避処理
