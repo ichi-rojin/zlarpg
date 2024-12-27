@@ -564,12 +564,11 @@ public class CharacterAI : MonoBehaviour
             yield return StartCoroutine(BattleMoveEra);
         }
 
+        BattleEra = Battle();
         if (_selectedForceSpawner != null)
         {
             yield return new WaitForSeconds(_selectedForceSpawner.stats.StopTime);
         }
-
-        BattleEra = Battle();
         StartCoroutine(BattleEra);
     }
 

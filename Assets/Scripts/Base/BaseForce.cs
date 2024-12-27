@@ -15,6 +15,7 @@ public class BaseForce : Token
     // ターゲット
     public Character _target;
 
+    [SerializeField]
     protected float _angle;
     protected float _duration;
     protected Tweener _tweener;
@@ -52,9 +53,8 @@ public class BaseForce : Token
         //進行方向
         Vector2 forward = _target.pos - pos;
         //角度に変換
-        float rad = Mathf.Atan2(forward.y, forward.x);
-        var degree = rad * Mathf.Rad2Deg;
-        return Quaternion.Euler(0, 0, degree);
+        float degree = Mathf.Atan2(forward.y, forward.x) * Mathf.Rad2Deg;
+        return Quaternion.Euler(0, 0, -1 * degree - 90);
     }
 
     protected void SetRotate()
@@ -65,15 +65,8 @@ public class BaseForce : Token
     protected float GetAngle()
     {
         Vector2 forward = _target.pos - pos;
-        float rad = Mathf.Atan2(forward.x, forward.y);
-        float degree = rad * Mathf.Rad2Deg;
-
-        if (degree < 0)
-        {
-            degree += 360;
-        }
-
-        return -1 * degree;
+        float degree = Mathf.Atan2(forward.x, forward.y) * Mathf.Rad2Deg;
+        return degree;
     }
 
     protected void CheckObstruction()
